@@ -237,10 +237,10 @@ laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[i
 eq_system1 <- 'dxdt[0] = lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = -(lambdaA + lambdaC + gam + mu) * x[2];'
 
 # kk = 1
-eq_system2 <- 'dxdt[0] = lambdaA * x[2] + 2 * lambdaC * x[2] + lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = lambdaC * n * x[2] + mu * n * x[2] - (lambdaC + mu) * n * '
+eq_system2 <- 'dxdt[0] = lambdaA * x[2] + 2 * lambdaC * x[2] + lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = lambdaC * n * x[2] + mu * n * x[2] - (lambdaC + mu) * n * x[2] - (lambdaA + gam) * x[2];'
 
 
-
+library(odeintr)
 pars = c(lambdaA = 0.5, lambdaC = 0.1, mu = 0.1, gam = 0.1, n = 10)
-compile_sys("logistic" , eq_system, pars, TRUE)
-
+compile_sys("rhs1" , eq_system1, pars, TRUE)
+compile_sys("rhs2" , eq_system2, pars, TRUE)
