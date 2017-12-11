@@ -225,22 +225,115 @@ library(odeintr)
 
 integrate_sys(DAISIE_loglik_rhs())
 
-# RHS2 --------------------------------------------------------------------
+# RHS1_odeintr --------------------------------------------------------------------
 
 
+DAISIE_loglik_rhs_odeintr = function(t,x,pars)
+{
+  # Returns list with 3 strings containing right hand side of ODE for input in odeintr
+  
+  # Reads model parameters
+  lx = (length(x) - 1)/2 # State of the system (current probs)
+  lac = pars[1]          # Lambda^c
+  mu = pars[2]           # mu
+  K = pars[3]            # K
+  gam = pars[4]          # gamma
+  laa = pars[5]          # Lambda^a
+  kk = pars[6]           # k state (FILL HERE WHAT HIS MEANS)
+  ddep = pars[7]         # Type of diversity dependence (0 = no DD; 1 = linear dep in speciation; 2 = exponential dep in 
+                         # speciation rate; 11 = linear dep in speciation and immigration; 21 = exponential dep in speciation and immigration) 
+  
+  nn = -2:(lx+2*kk+1)
+  lnn = length(nn)
+  nn = pmax(rep(0,lnn),nn)
+  
+  if(ddep == 0)
+  {
+    laavec = laa * rep(1,lnn)
+    lacvec = lac * rep(1,lnn)
+    muvec = mu * rep(1,lnn)
+    gamvec = gam * rep(1,lnn)
+  } else {
+    if(ddep == 1)
+    {
+      laavec = laa * rep(1,lnn)
+      lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
+      muvec = mu * rep(1,lnn)
+      gamvec = gam * rep(1,lnn)
+    } else {
+      if(ddep == 2)
+      {
+        laavec = laa * rep(1,lnn)
+        lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
+        muvec = mu * rep(1,lnn)
+        gamvec = gam * rep(1,lnn)
+      } else {
+        if(ddep == 11)
+        {
+          laavec = laa * rep(1,lnn)
+          lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
+          muvec = mu * rep(1,lnn)
+          gamvec = pmax(rep(0,lnn),gam * (1 - nn/K))
+        } else {
+          if(ddep == 21)
+          {
+            laavec = laa * rep(1,lnn)
+            lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
+            muvec = mu * rep(1,lnn)
+            gamvec = pmax(rep(0,lnn),gam * exp(-nn/K))
+          } else {
+            if(ddep == 3)
+            {
+              laavec = laa * rep(1,lnn)
+              lacvec = lac * rep(1,lnn)
+              muvec = mu * (1 + nn/K)
+              gamvec = gam * rep(1,lnn)
+            }
+          }}}}}
+  
+  #x = x * (x > 0)
+  
+  xx1 = c(0,0,x[1:lx],0)
+  xx2 = c(0,0,x[(lx + 1):(2 * lx)],0)
+  xx3 = x[2 * lx + 1]
+  
+  nil2lx = 3:(lx + 2)
+  
+  il1 = nil2lx+kk-1
+  il2 = nil2lx+kk+1
+  il3 = nil2lx+kk
+  il4 = nil2lx+kk-2
+  
+  in1 = nil2lx+2*kk-1
+  in2 = nil2lx+1
+  in3 = nil2lx+kk
+  
+  ix1 = nil2lx-1
+  ix2 = nil2lx+1
+  ix3 = nil2lx
+  ix4 = nil2lx-2
+  
+  
+  
+  
 laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[ix3] +
 	lacvec[il1] * nn[in1] * xx1[ix1] + muvec[il2] * nn[in2] * xx1[ix2] +
 	-(muvec[il3] + lacvec[il3]) * nn[in3] * xx1[ix3] +
 	-gamvec[il3] * xx1[ix3]
 
 
-eq_system1 <- 'dxdt[0] = lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = -(lambdaA + lambdaC + gam + mu) * x[2];'
+dx1_odeintr_char <- 'dxdt[0] = lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = -(lambdaA + lambdaC + gam + mu) * x[2];'
 
 # kk = 1
-eq_system2 <- 'dxdt[0] = lambdaA * x[2] + 2 * lambdaC * x[2] + lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = lambdaC * n * x[2] + mu * n * x[2] - (lambdaC + mu) * n * x[2] - (lambdaA + gam) * x[2];'
+dx_odeintr_char <- 'dxdt[0] = lambdaA * x[2] + 2 * lambdaC * x[2] + lambdaA * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - lambdaA * x[1]; dxdt[2] = lambdaC * n * x[2] + mu * n * x[2] - (lambdaC + mu) * n * x[2] - (lambdaA + gam) * x[2];'
 
-
+library(DAISIE)
 library(odeintr)
 pars = c(lambdaA = 0.5, lambdaC = 0.1, mu = 0.1, gam = 0.1, n = 10)
 compile_sys("rhs1" , eq_system1, pars, TRUE)
 compile_sys("rhs2" , eq_system2, pars, TRUE)
+
+return(list(c(dx1,dx2,dx3)))
+}
+
+
