@@ -332,7 +332,11 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   # }
   # )
   
+<<<<<<< HEAD
   temp_names <- names(`lacvec[il3 + 1]`)
+=======
+  temp_names <- names(temp_vector)
+>>>>>>> 3523bab906c72c42f3b1a0dfd6abe4d58d6ffefc
   paste("(", paste(temp_names, collapse = " + "), ")", sep = "")
   
   
@@ -355,7 +359,10 @@ laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[i
 
 # Do a paste function here that prints the sum of all the elements of each lac[il1]etc. vector.
 # Output should be (lacvec[il1]1 + lacvec[il1]2)
+<<<<<<< HEAD
 # Check working with headers in C++ to make matrix multiplication work
+=======
+>>>>>>> 3523bab906c72c42f3b1a0dfd6abe4d58d6ffefc
 
 # Attention: R does point to point vector multiplication. laa and xx2[ix1] are vectors
 dx1_odeintr_char <- 'dxdt[0] = laa * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - laa * x[1]; dxdt[2] = -(laa + lambdaC + gam + mu) * x[2];'
