@@ -249,42 +249,42 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   
   if(ddep == 0)
   {
-    laavec = laa
+    laavec = laa * rep(1,lnn)
     lacvec = lac * rep(1,lnn)
     muvec = mu * rep(1,lnn)
     gamvec = gam * rep(1,lnn)
   } else {
     if(ddep == 1)
     {
-      laavec = laa
+      laavec = laa * rep(1,lnn)
       lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
       muvec = mu * rep(1,lnn)
       gamvec = gam * rep(1,lnn)
     } else {
       if(ddep == 2)
       {
-        laavec = laa
+        laavec = laa * rep(1,lnn)
         lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
         muvec = mu * rep(1,lnn)
         gamvec = gam * rep(1,lnn)
       } else {
         if(ddep == 11)
         {
-          laavec = laa
+          laavec = laa * rep(1,lnn)
           lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
           muvec = mu * rep(1,lnn)
           gamvec = pmax(rep(0,lnn),gam * (1 - nn/K))
         } else {
           if(ddep == 21)
           {
-            laavec = laa
+            laavec = laa * rep(1,lnn)
             lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
             muvec = mu * rep(1,lnn)
             gamvec = pmax(rep(0,lnn),gam * exp(-nn/K))
           } else {
             if(ddep == 3)
             {
-              laavec = laa
+              laavec = laa * rep(1,lnn)
               lacvec = lac * rep(1,lnn)
               muvec = mu * (1 + nn/K)
               gamvec = gam * rep(1,lnn)
@@ -303,12 +303,40 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   il2 = nil2lx+kk+1
   il3 = nil2lx+kk
   il4 = nil2lx+kk-2
+  
+
   ############ COMPLETE THIS NEXT!
-  for(i in 1:length(lacvec)){
-    assign(paste("lacvec", i, sep = ""), )
-  }
-  i=1
-  paste("lacvec", i)
+
+
+  listOfVectors <- list(laavec, lacvec, muvec, gamvec)
+  listOfil <- list(il1, il2, il3, il4)
+  vecOfVectorNames <- c("laavec", "lacvec", "muvec", "gamvec")
+  `laavec[il1 + 1]` <- laavec[il1 + 1]
+  `laavec[il3[1]]` <- laavec[il3[1]]
+  `laavec[il3 + 1]` <- laavec[il3 + 1]
+  `laavec[il3]` <- laavec[il3]
+  `lacvec[il4 + 1]` <- lacvec[il4 + 1]
+  `lacvec[il1]` <- lacvec[il1]
+  `lacvec[il3]` <- lacvec[il3]
+  `lacvec[il3[1]` <- lacvec[il3[1]]
+  `lacvec[il1 + 1]` <- lacvec[il1 + 1]
+  `lacvec[il3 + 1]` <- lacvec[il3 + 1]
+  
+  laavec[il1 + 1]
+  
+  # microbenchmark(
+  # for(i in 1:length(vecOfVectorNames)){ 
+  #   for(j in 1:length(listOfil)){
+  #     assign(paste(vecOfVectorNames[[j]], "[il", i, "]", sep = "" ), listOfVectors[[i]][listOfil[[j]]])
+  #   }
+  # }
+  # )
+  
+  temp_names <- names(`lacvec[il3 + 1]`)
+  paste("(", paste(temp_names, collapse = " + "), ")", sep = "")
+  
+  
+  
   in1 = nil2lx+2*kk-1
   in2 = nil2lx+1
   in3 = nil2lx+kk
@@ -317,10 +345,6 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   ix2 = nil2lx+1
   ix3 = nil2lx
   ix4 = nil2lx-2
-  
-laa <- c(2,3,5)
-assign("laavec[il1 + 1]", 2)
-mget("laa[1]")
 
 laavec[il1 + 1]  
 laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[ix3] +
@@ -329,6 +353,11 @@ laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[i
 	-gamvec[il3] * xx1[ix3]
 
 
+# Do a paste function here that prints the sum of all the elements of each lac[il1]etc. vector.
+# Output should be (lacvec[il1]1 + lacvec[il1]2)
+# Check working with headers in C++ to make matrix multiplication work
+
+# Attention: R does point to point vector multiplication. laa and xx2[ix1] are vectors
 dx1_odeintr_char <- 'dxdt[0] = laa * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - laa * x[1]; dxdt[2] = -(laa + lambdaC + gam + mu) * x[2];'
 
 # kk = 1
@@ -336,7 +365,9 @@ dx_odeintr_char <- 'dxdt[0] = laa * x[2] + 2 * lambdaC * x[2] + laa * x[1] + lam
 
 library(DAISIE)
 library(odeintr)
-pars = c(laa = 0.5, lambdaC = 0.1, mu = 0.1, gam = 0.1, n = 10)
+pars = c(laa = laa, lambdaC = 0.1, mu = 0.1, gam = 0.1, n = 10)
+pars = c(lacvec)
+
 compile_sys("rhs1" , eq_system1, pars, TRUE)
 compile_sys("rhs2" , eq_system2, pars, TRUE)
 
