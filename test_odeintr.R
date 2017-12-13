@@ -1,12 +1,16 @@
-
-
-
+# Writen by Pedro Neves on 13/12/, under the GPL-2 license.
+# Code adapted from package DAISIE (Etienne, Valent, Phillimore & Haegeman), 
+# requires package odeintr (Keitt)
+# 
+# 
 # RHS1_odeintr --------------------------------------------------------------------
 
 
 DAISIE_loglik_rhs_odeintr = function(t,x,pars)
 {
-  # Returns list with 3 strings containing right hand side of ODE for input in odeintr
+  # Returns C++ string with rhs of the equation and parameter vector to pass to 
+  # odeintr. This code adapted from functions DAISIE_loglik_rhs and 
+  # DAISIE_loglik_rhs1, in function DAISIE_loglik_all
   
   # Reads model parameters
   lx = (length(x) - 1)/2 # Number of variables containing the state of the system . x = current probs
