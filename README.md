@@ -4,7 +4,7 @@
 
 
 
-daisie_odeint is a simple rewrite of the daise_loglik_rhs and daisie_loglik_rhs2 functions from the R package DAISIE: Dynamical Assembly of Islands by Speciation, Immigration and Extinction, by Etienne, Valente, Phillimore, and Haegeman. 
+daisie_odeint is a simple rewrite of the daise_loglik_rhs and daisie_loglik_rhs2 internal functions from the R package DAISIE: Dynamical Assembly of Islands by Speciation, Immigration and Extinction, by Etienne, Valente, Phillimore, and Haegeman. This pair of functions is called by the main function chain (daisie_ML, daisie_loglik_all).
 
 daisie_odeint allows the use of another integration engine, the C++ library odeint from the Boost collection, apart from the already implemented [deSolve](https://cran.r-project.org/package=deSolve). 
 To achieve this, daisie_odeint relies on the R package [odeintr](https://cran.r-project.org/package=odeintr), a wrapper for odeint in R.
