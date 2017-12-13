@@ -1,5 +1,4 @@
 
-
 # RHS1 --------------------------------------------------------------------
 
 DAISIE_loglik_rhs = function(t,x,pars)
@@ -304,6 +303,15 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   il3 = nil2lx+kk
   il4 = nil2lx+kk-2
   
+  in1 = nil2lx+2*kk-1
+  in2 = nil2lx+1
+  in3 = nil2lx+kk
+  
+  ix1 = nil2lx-1
+  ix2 = nil2lx+1
+  ix3 = nil2lx
+  ix4 = nil2lx-2
+  
 
   ############ COMPLETE THIS NEXT!
 
@@ -321,8 +329,45 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   `lacvec[il3[1]` <- lacvec[il3[1]]
   `lacvec[il1 + 1]` <- lacvec[il1 + 1]
   `lacvec[il3 + 1]` <- lacvec[il3 + 1]
+  `xx1[ix1]` <- xx1[ix1]
+  `xx1[ix2]` <- xx1[ix2]
+  `xx1[ix3]` <- xx1[ix3]
+  `xx2[ix1]` <- xx2[ix1]
+  `xx2[ix2]` <- xx2[ix2]
+  `xx2[ix3]` <- xx2[ix3]
+  `xx2[ix4]` <- xx2[ix4]
+  `xx3`      <- xx3
+  `nn[in1]`  <- nn[in1]
+  `nn[in2]`  <- nn[in2]
+  `nn[in3]`  <- nn[in3]
+
+  modelpars <- c(
+    `laavec[il1 + 1]`,
+    `laavec[il3[1]]`,
+    `laavec[il3 + 1]`,
+    `laavec[il3]`,
+    `lacvec[il4 + 1]`,
+    `lacvec[il1]`,
+    `lacvec[il3]`,
+    `lacvec[il3[1]`,
+    `lacvec[il1 + 1]`,
+    `lacvec[il3 + 1]`,
+    `xx1[ix1]`,
+    `xx1[ix2]`,
+    `xx1[ix3]`,
+    `xx2[ix1]`,
+    `xx2[ix2]`,
+    `xx2[ix3]`,
+    `xx2[ix4]`,
+    `xx3`,
+    `nn[in1]`,
+    `nn[in2]`,
+    `nn[in3]`
+  )
   
-  laavec[il1 + 1]
+
+  
+  
   
   # microbenchmark(
   # for(i in 1:length(vecOfVectorNames)){ 
@@ -332,24 +377,12 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   # }
   # )
   
-<<<<<<< HEAD
-  temp_names <- names(`lacvec[il3 + 1]`)
-=======
   temp_names <- names(temp_vector)
->>>>>>> 3523bab906c72c42f3b1a0dfd6abe4d58d6ffefc
   paste("(", paste(temp_names, collapse = " + "), ")", sep = "")
   
   
   
-  in1 = nil2lx+2*kk-1
-  in2 = nil2lx+1
-  in3 = nil2lx+kk
   
-  ix1 = nil2lx-1
-  ix2 = nil2lx+1
-  ix3 = nil2lx
-  ix4 = nil2lx-2
-
 laavec[il1 + 1]  
 laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[ix3] +
 	lacvec[il1] * nn[in1] * xx1[ix1] + muvec[il2] * nn[in2] * xx1[ix2] +
@@ -359,10 +392,6 @@ laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[i
 
 # Do a paste function here that prints the sum of all the elements of each lac[il1]etc. vector.
 # Output should be (lacvec[il1]1 + lacvec[il1]2)
-<<<<<<< HEAD
-# Check working with headers in C++ to make matrix multiplication work
-=======
->>>>>>> 3523bab906c72c42f3b1a0dfd6abe4d58d6ffefc
 
 # Attention: R does point to point vector multiplication. laa and xx2[ix1] are vectors
 dx1_odeintr_char <- 'dxdt[0] = laa * x[1] + lambdaC * x[1] + mu * x[1] + lambdaC * n * x[0] + mu * n * x[0] - (mu + lambdaC) * n * x[0] - gam * x[0]; dxdt[1] = gam * x[0] + lambdaC * n * x[1] + mu * n * x[1] - (mu + lambdaC) * n * x[1] - laa * x[1]; dxdt[2] = -(laa + lambdaC + gam + mu) * x[2];'
@@ -375,10 +404,10 @@ library(odeintr)
 pars = c(laa = laa, lambdaC = 0.1, mu = 0.1, gam = 0.1, n = 10)
 pars = c(lacvec)
 
-compile_sys("rhs1" , eq_system1, pars, TRUE)
-compile_sys("rhs2" , eq_system2, pars, TRUE)
+the_code <- compile_sys("rhs1" , dx1_odeintr_char, pars, TRUE)
+cat(the_code)
+compile_sys("rhs2" , eq_system2, modelpars, TRUE)
 
 return(list(c(dx1,dx2,dx3)))
 }
-
 
