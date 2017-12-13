@@ -169,14 +169,14 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
 
 # Stores C++ code in string to be passed to compile_sys function. Arguments are
 # passed by their C++ friendly name (names(modelpars)).
+# 
 rhs1.cpp.system <- 'dxdt[0] = laa_il1_add_one * xx2_ix1 + lac_il4_add_one * xx2_ix4 + mu_il2_add_one * xx2_ix3 + lac_il1 * nn_in1 * xx1_ix1 + mu_il2 * nn_in2 * xx1_ix2 - (mu_il3 + lac_il3) * nn_in3 * xx1_ix3 + gam_il3 * xx1_ix3; dxdt[1] = gam_il3 * xx1_ix3 + lac_il1_add_one * nn_in1 * xx2_ix1 + mu_il2_add_one * nn_in2 * xx2_ix2 - (mu_il3_add_one + laa_il3_add_one) * nn_in3 * xx2_ix3 - gam_il3 * xx1_ix3; dxdt[2] = -(laa_il3 + lac_il3 + gam_il3_1 + mu_il3_1) * xx3;'
+
 # TODO(Neves-P): Build rhs2 for k=1
 
-return(list(c(rhs1.cpp.system, model.pars)))
-
+return(list(rhs1.cpp.system, model.pars))
 
 # Prints the C++ code built by odeintr. Move to another function?
-the_code <- compile_sys("rhs1" , rhs1.cpp.system, model.pars, TRUE)
-
+# the_code <- compile_sys("rhs1" , rhs1.cpp.system, model.pars, TRUE)
 }
 
