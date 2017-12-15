@@ -8,6 +8,14 @@ daisie_odeint is a simple rewrite of the daise_loglik_rhs and daisie_loglik_rhs2
 
 daisie_odeint allows the use of another integration engine, the C++ library odeint from the Boost collection, apart from the already implemented [deSolve](https://cran.r-project.org/package=deSolve). 
 To achieve this, daisie_odeint relies on the R package [odeintr](https://cran.r-project.org/package=odeintr), a wrapper for odeint in R.
-Possible custom Rcpp integration can be implemented in the future
+Possible custom Rcpp integration can be implemented in the future.
+
 
 The original version of DAISIE can be found on CRAN, [here](https://cran.r-project.org/package=DAISIE).
+
+daisie_odeint is not yet correctly compiling and working with odeintr.
+TODO:
+- Test odeintr::integrate_sys function (wrapper from R function to C++ code)
+- (Re-)write function that creates correct C++ string given all values of the vector x
+- Test odeintr::compile_sys
+- Compare odeintr with deSolve, on both results and speed.
