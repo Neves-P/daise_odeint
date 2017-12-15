@@ -1,21 +1,23 @@
 # Writen by Pedro Neves on 13/12/17, under the GPL-2 license.
-# Code adapted from package DAISIE (Etienne, Valent, Phillimore & Haegeman), 
+# Code adapted from package DAISIE (Etienne, Valente, Phillimore & Haegeman), 
 # requires package odeintr (Keitt)
 # 
-# 
-
-require(odeintr)
+# **********************************WARNING***********************************
+# * This function currently only works if the input is a a vector of doubles *
+# * This is not the case for almost all DAISIE situations. compile_sys at    *
+# * the main loglik function will *NOT* compile at this state                *
+# ****************************************************************************
 
 # RHS1_odeintr --------------------------------------------------------------------
 
-DAISIE_loglik_rhs_odeintr = function(t,x,pars)
+DAISIE_loglik_rhs_odeintr = function(x,pars)
 {
   # Returns C++ string with rhs of the equation and parameter vector to pass to 
   # odeintr. This code adapted from functions DAISIE_loglik_rhs and 
   # DAISIE_loglik_rhs1, in function DAISIE_loglik_all
   
   # Reads model parameters
-  lx = (length(x) - 1)/2 # Number of variables containing the state of the system . x = current probs
+  lx = (length(x) - 1)/2 # Number of variables containing the state of the system. x = current probs
   lac = pars[1]          # Lambda^c
   mu = pars[2]           # mu
   K = pars[3]            # K
@@ -23,9 +25,9 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
   laa = pars[5]          # Lambda^a
   kk = pars[6]           # k (nº species in )
   ddep = pars[7]         # Type of diversity dependence (0 = no DD; 1 = linear 
-  # dep in speciation; 2 = exponential dep in 
-  # speciation rate; 11 = linear dep in speciation and 
-  # immigration; 21 = exponential dep in speciation and immigration) 
+  # dep in speciation; 2 = exponential dep in speciation rate; 
+  # 11 = linear dep in speciation and immigration; 21 = exponential dep
+  #  in speciation and immigration) 
   
   nn = -2:(lx+2*kk+1)
   lnn = length(nn)         # 
@@ -173,7 +175,7 @@ DAISIE_loglik_rhs_odeintr = function(t,x,pars)
 # passed by their C++ friendly name (names(modelpars)).
 # C++ code for first rhs (kk != 1)
 rhs1.cpp.system <- 'dxdt[0] = laa_il1_add_one * xx2_ix1 + lac_il4_add_one * xx2_ix4 + mu_il2_add_one * xx2_ix3 + lac_il1 * nn_in1 * xx1_ix1 + mu_il2 * nn_in2 * xx1_ix2 - (mu_il3 + lac_il3) * nn_in3 * xx1_ix3 + gam_il3 * xx1_ix3; dxdt[1] = gam_il3 * xx1_ix3 + lac_il1_add_one * nn_in1 * xx2_ix1 + mu_il2_add_one * nn_in2 * xx2_ix2 - (mu_il3_add_one + laa_il3_add_one) * nn_in3 * xx2_ix3 - gam_il3 * xx1_ix3; dxdt[2] = -(laa_il3 + lac_il3 + gam_il3_1 + mu_il3_1) * xx3;'
-compile_sys("rhs1", rhs1.cpp.system, pars = model.pars)
+##compile_sys("rhs1", rhs1.cpp.system, pars = model.pars)
 return(list(rhs1.cpp.system, model.pars))
 }
 
@@ -321,14 +323,14 @@ model.pars.names <- c(
   "xx2_ix2",
   "xx2_ix3",
   "xx2_ix4",
-  "xx3_ix1",
-  "xx3_ix2", ## THIS IS NEW
-  "xx3_ix3", ## THIS IS NEW
-  "xx3_ix4", ## THIS IS NEW
+  "xx3_ix1", ## This is unique to rhs2
+  "xx3_ix2", ## This is unique to rhs2
+  "xx3_ix3", ## This is unique to rhs2
+  "xx3_ix4", ## This is unique to rhs2
   "nn_in1",
   "nn_in2",
   "nn_in3",
-  "nn_in4", ## THIS IS NEW
+  "nn_in4", ## This is unique to rhs2
   "nn_in3_add_one",
   "mu_il2_add_one",
   "mu_il2",
@@ -344,8 +346,19 @@ names(model.pars) <- model.pars.names
 # so that this is only calculated if kk == 1. At first do conditional test in 
 # R and use one code or another. Then try doing the test in C++
 # C++ for second rhs (kk == 1)
-rhs2.cpp.system <- 'dxdt[0] = (laa_il3 * xx3_ix3 + 2 * lac_il1 * xx3_ix1)  + laa_il1_add_one * xx2_ix1 + lac_il4_add_one * xx2_ix4 + mu_il2_add_one * xx2_ix3 + lac_il1 * nn_in1 * xx1_ix1 + mu_il2 * nn_in2 * xx1_ix2 - (mu_il3 + lac_il3) * nn_in3 * xx1_ix3 - gam_il3 * xx1_ix3; dxdt[1] = gam_il3 * xx1_ix3 + lac_il1_add_one + nn_in1 * xx2_ix2 + mu_il2_add_one * nn_in2 * xx2_ix2 -(mu_il3_add_one + lac_il3_add_one) * nn_in3_add_one * xx2_ix3 - laa_il3_add_one * xx2_ix3; dxdt[2] = lac_il1 * nn_in4 * xx3_ix1 + mu_il2 * nn_in2 * xx3_ix2 - (lac_il3 + mu_il3) * nn_in3 * xx3_ix3 - (laa_il3 + gam_il3) * xx3_ix3;' 
-compile_sys("rhs2", rhs2.cpp.system, pars = model.pars)
+rhs2.cpp.system <- 'dxdt[0] = (laa_il3 * xx3_ix3 + 2 * lac_il1 * xx3_ix1)  + 
+                  laa_il1_add_one * xx2_ix1 + lac_il4_add_one * xx2_ix4 + 
+                  mu_il2_add_one * xx2_ix3 + lac_il1 * nn_in1 * xx1_ix1 + 
+                  mu_il2 * nn_in2 * xx1_ix2 - (mu_il3 + lac_il3) * nn_in3 * 
+                  xx1_ix3 - gam_il3 * xx1_ix3; dxdt[1] = gam_il3 * xx1_ix3 + 
+                  lac_il1_add_one + nn_in1 * xx2_ix2 + mu_il2_add_one * 
+                  nn_in2 * xx2_ix2 -(mu_il3_add_one + lac_il3_add_one) *
+                  nn_in3_add_one * xx2_ix3 - laa_il3_add_one * xx2_ix3; 
+                  dxdt[2] = lac_il1 * nn_in4 * xx3_ix1 + mu_il2 * nn_in2 * 
+                  xx3_ix2 - (lac_il3 + mu_il3) * nn_in3 * xx3_ix3 - 
+                  (laa_il3 + gam_il3) * xx3_ix3;' 
+
+return(list(rhs2.cpp.system, model.pars))
 # Prints the C++ code built by odeintr. Move to another function?
 # the_code <- compile_sys("rhs1" , rhs1.cpp.system, model.pars, TRUE)
 }
