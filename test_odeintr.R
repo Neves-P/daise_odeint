@@ -23,7 +23,7 @@ DAISIE_loglik_rhs_odeintr = function(x,pars)
   K = pars[3]            # K
   gam = pars[4]          # gamma
   laa = pars[5]          # Lambda^a
-  kk = pars[6]           # k (nº species in )
+  kk = pars[6]           # 
   ddep = pars[7]         # Type of diversity dependence (0 = no DD; 1 = linear 
   # dep in speciation; 2 = exponential dep in speciation rate; 
   # 11 = linear dep in speciation and immigration; 21 = exponential dep

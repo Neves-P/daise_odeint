@@ -210,7 +210,7 @@ DAISIE_loglik = function(pars1,pars2,brts,stac,missnumspec,methode = "lsodes", s
     }
     if((ddep == 1 | ddep == 11) & ceiling(K) < (S + missnumspec))
     {
-      #cat('The proposed value of K is inompatible with the number of species in the clade. Likelihood for this parameter set will be set to -Inf.\n')
+      #cat('The proposed value of K is incompatible with the number of species in the clade. Likelihood for this parameter set will be set to -Inf.\n')
       loglik = -Inf
       return(loglik)
     }

@@ -25,7 +25,7 @@ dx1 = (laavec[il3] * xx3[ix3] + 2 * lacvec[il1] * xx3[ix1]) * (kk == 1) +
 # outflow:
 # all events with n+k+1 species present
 dxdt = function(x,t) {
-  c((laavec[il3] * xx3[ix3] + 2 * lacvec[il1] * xx3[ix1]) * (kk == 1) + 
+  c((laavec[il3] * xx3[ix3] + 2 * lacvec[il1] * xx3[ix1]) + 
                     laavec[il1 + 1] * xx2[ix1] + lacvec[il4 + 1] * xx2[ix4] + muvec[il2 + 1] * xx2[ix3] +
                     lacvec[il1] * nn[in1] * xx1[ix1] + muvec[il2] * nn[in2] * xx1[ix2] +
                     -(muvec[il3] + lacvec[il3]) * nn[in3] * xx1[ix3] - gamvec[il3] * xx1[ix3]
@@ -36,3 +36,6 @@ dxdt = function(x,t) {
     -(lacvec[il3] + muvec[il3]) * nn[in3] * xx3[ix3] +
     -(laavec[il3] + gamvec[il3]) * xx3[ix3])
 }
+
+
+sys <- '0 + 23 * alpha + 31'
