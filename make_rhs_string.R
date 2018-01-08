@@ -93,7 +93,7 @@ for(i in 1:length(laavec[il1])){
   assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
   temp_xx2_ix4 <- paste("xx2_ix4", i, sep = "_")
   assign(temp_xx2_ix4, xx2[ix4][i])
-  prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2, sep = " * ")
+  prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
   
   temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
   assign(temp_muvec_il2_plusone, muvec[il2 + 1][i])
@@ -129,7 +129,13 @@ for(i in 1:length(laavec[il1])){
   temp_dx1_name <- paste("dx1", i, sep = "_")
   temp_dx1_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
   assign(temp_dx1_name, temp_dx1_rhs)
+  
+  #Pars
+	dx1_pars_list <- list()
+	dx1_pars_list[i] <- c()
+  
+  
 }
 
-
+# Create vector of model pars?
 
