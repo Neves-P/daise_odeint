@@ -15,7 +15,5 @@ The original version of DAISIE can be found on CRAN, [here](https://cran.r-proje
 
 daisie_odeint is not yet correctly compiling and working with odeintr.
 TODO:
-- Test odeintr::integrate_sys function (wrapper from R function to C++ code)
-- (Re-)write function that creates correct C++ string given all values of the vector x
-- Test odeintr::compile_sys
+- Test odeintr::compile_sys function (wrapper from R function to C++ code) with new rhs script
 - Compare odeintr with deSolve, on both results and speed.
