@@ -89,7 +89,7 @@ for(i in 1:length(laavec[il1])){
   temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
   assign(temp_xx2_ix1, xx2[ix2][i])
   prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
-	print(prod1)
+	
   temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
   assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
   temp_xx2_ix4 <- paste("xx2_ix4", i, sep = "_")
