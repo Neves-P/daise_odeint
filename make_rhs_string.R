@@ -81,14 +81,15 @@ ix4 = nil2lx-2
 #   assign(temp_str1, laavec[il1 + 1][i])
 #   temp_xx2 <- paste("xx2_ix1", i, sep = "_")
 #   }
-
+list_dx1 <- list()
+dx1_pars_list <- list()
 for(i in 1:length(laavec[il1])){
   temp_laavec_il1_plusone <- paste("laavec_il1_plusone", i, sep = "_")
   assign(temp_laavec_il1_plusone, laavec[il1 + 1][i])
   temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
   assign(temp_xx2_ix1, xx2[ix2][i])
   prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
-  
+	print(prod1)
   temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
   assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
   temp_xx2_ix4 <- paste("xx2_ix4", i, sep = "_")
@@ -124,18 +125,19 @@ for(i in 1:length(laavec[il1])){
   
   temp_neggamvec_il3 <- paste("-gamvec_il3", i, sep = "_")
   assign(temp_neggamvec_il3, -gamvec[il3][i]) # GAMVEC CHANGED SIGN
-  prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " *")
+  prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
   
-  temp_dx1_name <- paste("dx1", i, sep = "_")
-  temp_dx1_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
-  assign(temp_dx1_name, temp_dx1_rhs)
+  complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
+  list_dx1[[i]] <- complete_rhs
+
   
   #Pars
-	dx1_pars_list <- list()
-	dx1_pars_list[i] <- c()
-  
-  
+
+	pars    <- ls(pattern = "temp")
+	pars <- pars[grepl("temp", pars) & !grepl("xx", pars)]
+  dx1_pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
 }
 
-# Create vector of model pars?
 
+
+ 
