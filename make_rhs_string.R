@@ -1,4 +1,4 @@
-#### Testing conditions ####
+#### Testing conditions #### CHECK IF LIST_INDICES WORKS
 lac = .4
 mu = 0.1
 K = 30
@@ -81,61 +81,181 @@ ix4 = nil2lx-2
 #   assign(temp_str1, laavec[il1 + 1][i])
 #   temp_xx2 <- paste("xx2_ix1", i, sep = "_")
 #   }
-list_dx1 <- list()
-dx1_pars_list <- list()
-for(i in 1:length(laavec[il1])){
-  temp_laavec_il1_plusone <- paste("laavec_il1_plusone", i, sep = "_")
-  assign(temp_laavec_il1_plusone, laavec[il1 + 1][i])
-  temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
-  assign(temp_xx2_ix1, xx2[ix2][i])
-  prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
+list_pars <- list(laavec = laavec, lacvec = lacvec, 
+											muvec = muvec, gamvec = gamvec,
+											nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3)
+list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
+										 in1 = in1, in2 = in2, in3 = in3,
+										 ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
+
+make_rhs_1 <- function(list_pars, list_indices){
 	
-  temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
-  assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
-  temp_xx2_ix4 <- paste("xx2_ix4", i, sep = "_")
-  assign(temp_xx2_ix4, xx2[ix4][i])
-  prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
-  
-  temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
-  assign(temp_muvec_il2_plusone, muvec[il2 + 1][i])
-  temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
-  assign(temp_xx2_ix3, xx2[ix3][i])
-  prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
-  
-  temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
-  assign(temp_lacvec_il1, lacvec[il1][i])
-  temp_nn_in1 <- paste("nn_in1", i, sep = "_")
-  assign(temp_nn_in1, nn[in1][i])
-  temp_xx1_ix1 <- paste("xx1_ix1", i, sep = "_")
-  assign(temp_xx1_ix1, xx1[ix1][i])
-  prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
-  
-  temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
-  assign(temp_muvec_il3, muvec[il3][i])
-  temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
-  assign(temp_lacvec_il3, lacvec[il3][i])
-  neg_term1 <- paste("-(", paste(temp_muvec_il3, temp_lacvec_il3, 
-                                 sep = " + "), ")", sep = "")
+	list_dx1 <- list()
+	dx1_pars_list <- list()
+	
+	for(i in 1:length(list_pars$laavec[list_indices$il1])){
+		
+		#### dx1 ####
+		
+		# First product
+		temp_laavec_il1_plusone <- paste("laavec_il1_plusone", i, sep = "_")
+		assign(temp_laavec_il1_plusone, list_pars$laavec[list_indices$il1+1][i])
+		
+		temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
+		assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
+		
+		prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
+		
+		
+		# Second product
+		temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
+		assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
+		
+		temp_xx2_ix4 <- paste("xx2_ix4", i, sep = "_")
+		assign(temp_xx2_ix4, xx2[ix4][i])
+		
+		prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
+		
+		
+		# Third product
+		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
+		assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
+		
+		temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
+		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+		
+		prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
 
-  temp_nn_in2 <- paste("nn_in2", i, sep = "_")
-  assign(temp_nn_in2, nn[in2][i])
-  temp_xx1_ix3 <- paste("xx1_ix3", i, sep = "_")
-  assign(temp_xx1_ix3, xx1[ix3][i])
-  prod5 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
-  
-  temp_neggamvec_il3 <- paste("-gamvec_il3", i, sep = "_")
-  assign(temp_neggamvec_il3, -gamvec[il3][i]) # GAMVEC CHANGED SIGN
-  prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
-  
-  complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
-  list_dx1[[i]] <- complete_rhs
-
-  
-  #Pars
-
-	pars    <- ls(pattern = "temp")
-	pars <- pars[grepl("temp", pars) & !grepl("xx", pars)]
-  dx1_pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
+		
+		# Fourth product
+		temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
+		assign(temp_lacvec_il1, list_pars$lacvec[list_indices$il1][i])
+		
+		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
+		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
+		
+		temp_xx1_ix1 <- paste("xx1_ix1", i, sep = "_")
+		assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+		
+		prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
+		
+		
+		# Negative term
+		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
+		assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
+		
+		temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
+		assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
+		
+		neg_term1 <- paste("-(", paste(temp_muvec_il3, temp_lacvec_il3, 
+																	 sep = " + "), ")", sep = "")
+		
+		
+		# Fifth product
+		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+		assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+		
+		temp_xx1_ix3 <- paste("xx1_ix3", i, sep = "_")
+		assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
+		
+		prod5 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
+		
+		
+		# Sixth product
+		temp_neggamvec_il3 <- paste("-gamvec_il3", i, sep = "_")
+		assign(temp_neggamvec_il3, -list_pars$gamvec[list_indices$il3][i]) # GAMVEC CHANGED SIGN
+		
+		prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
+		
+		#### dx2 ####
+		
+		# First product
+		temp_gamvec_il3 <- paste("gamvec_il3", i, sep = "_")
+		assign(temp_gamvec_il3, list_pars$gamvec[list_indices$il3][i])
+		
+		temp_xx1_ix3 <- paste("xx1_ix3", i, sep = "_")
+		assign(temp_xx2_ix1, list_pars$xx1[list_indices$ix3][i])
+		
+		prod1 <- paste(temp_gamvec_il3, temp_xx1_ix3, sep = " * ")
+		
+		
+		# Second product
+		temp_lacvec_il1_plusone <- paste("lacvec_il1_plusone", i, sep = "_")
+		assign(temp_lacvec_il4_plusone, list_pars$lacvec[list_indices$il1 + 1][i])
+		
+		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
+		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
+		
+		temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
+		assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix1][i])
+		
+		prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
+		
+		# START HERE!
+		# Third product
+		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
+		assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
+		
+		temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
+		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+		
+		prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
+		
+		
+		# Fourth product
+		temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
+		assign(temp_lacvec_il1, list_pars$lacvec[list_indices$il1][i])
+		
+		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
+		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
+		
+		temp_xx1_ix1 <- paste("xx1_ix1", i, sep = "_")
+		assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+		
+		prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
+		
+		
+		# Negative term
+		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
+		assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
+		
+		temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
+		assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
+		
+		neg_term1 <- paste("-(", paste(temp_muvec_il3, temp_lacvec_il3, 
+																	 sep = " + "), ")", sep = "")
+		
+		
+		# Fifth product
+		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+		assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+		
+		temp_xx1_ix3 <- paste("xx1_ix3", i, sep = "_")
+		assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
+		
+		prod5 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
+		
+		
+		# Sixth product
+		temp_neggamvec_il3 <- paste("-gamvec_il3", i, sep = "_")
+		assign(temp_neggamvec_il3, -list_pars$gamvec[list_indices$il3][i]) # GAMVEC CHANGED SIGN
+		
+		prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
+		
+		# dx1 rhs of equation
+		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
+		list_dx1[[i]] <- complete_rhs
+		
+		
+		#Model parameters per rhs
+		
+		pars    <- ls(pattern = "temp")
+		pars <- pars[grepl("temp", pars) & !grepl("xx", pars)]
+		dx1_pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
+		
+		#Return
+		return(list(rhs = list_dx1, pars = dx1_pars_list))
+	}
 }
 
 
