@@ -268,14 +268,15 @@ make_rhs_1 <- function(list_pars, list_indices){
 		
 		list_dx3 <- prod1
 		
-		#Model parameters per rhs
+		#### Model parameters per rhs ####
 		
 		pars    <- ls(pattern = "temp")
 		pars <- pars[grepl("temp", pars) & !grepl("xx", pars)]
-		dx1_pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
+		pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
 		
-		#Return
-		return(list(rhs = list_dx1, pars = dx1_pars_list))
+		# Return
+		
+		return(list(rhs = c(list_dx1, list_dx2, list_dx3), pars = pars_list))
 	}
 }
 
