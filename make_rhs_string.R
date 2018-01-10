@@ -167,6 +167,11 @@ make_rhs_1 <- function(list_pars, list_indices){
 		
 		prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
 		
+		# dx1 rhs of equation
+		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
+		list_dx1[[i]] <- complete_rhs
+		
+		
 		#### dx2 ####
 		
 		# First product
@@ -191,61 +196,53 @@ make_rhs_1 <- function(list_pars, list_indices){
 		
 		prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
 		
-		# START HERE!
+
 		# Third product
 		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
 		assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
 		
-		temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
-		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+		assign(temp_nn2_in2, list_pars$nn[list_indices$in2][i])
 		
-		prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
+		temp_xx2_ix2 <- paste("xx2_ix2", i, sep = "_")
+		assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
 		
-		
-		# Fourth product
-		temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
-		assign(temp_lacvec_il1, list_pars$lacvec[list_indices$il1][i])
-		
-		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
-		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
-		
-		temp_xx1_ix1 <- paste("xx1_ix1", i, sep = "_")
-		assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
-		
-		prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
+		prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
 		
 		
 		# Negative term
-		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
-		assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
+		temp_muvec_il3_plusone <- paste("muvec_il3_plusone", i, sep= "_")
+		assign(temp_muvec_il3_plusone, list_pars$muvec[list_indices$il3 + 1][i])
 		
-		temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
-		assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
+		temp_lacvec_il3_plusone <- paste("lacvec_il3_plusone", i, sep = "_")
+		assign(temp_lacvec_il3_plusone, list_pars$lacvec[list_indices$il3 + 1][i])
 		
-		neg_term1 <- paste("-(", paste(temp_muvec_il3, temp_lacvec_il3, 
+		neg_term1 <- paste("-(", paste(temp_muvec_il3_plusone, temp_lacvec_il3_plusone, 
 																	 sep = " + "), ")", sep = "")
+		
+		# Fourth product
+		temp_nn_in3_plusone <- paste("nn_in3_plusone", i, sep = "_")
+		assign(temp_nn_in3_plusone, list_pars$nn[list_indices$in3 + 1][i])
+		
+		temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
+		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+		
+		prod4 <- paste(neg_term1, temp_nn_in3, temp_xx2_ix3, sep = " * ")
 		
 		
 		# Fifth product
-		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
-		assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+		temp_laavec_il3_plusone <- paste("laavec_il3_plusone", i, sep = "_")
+		assign(temp_laavec_il3_plusone, list_pars$laavec[list_indices$il3 + 1][i])
 		
-		temp_xx1_ix3 <- paste("xx1_ix3", i, sep = "_")
-		assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
+		temp_xx2_ix3 <- paste("xx2_ix3", i, sep = "_")
+		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
 		
-		prod5 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
+		prod5 <- paste(temp_laavec_il3_plusone, temp_xx2_ix3, sep = " * ")
 		
-		
-		# Sixth product
-		temp_neggamvec_il3 <- paste("-gamvec_il3", i, sep = "_")
-		assign(temp_neggamvec_il3, -list_pars$gamvec[list_indices$il3][i]) # GAMVEC CHANGED SIGN
-		
-		prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
-		
-		# dx1 rhs of equation
+		# dx2 rhs of equation
 		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
-		list_dx1[[i]] <- complete_rhs
-		
+		list_dx2[[i]] <- complete_rhs
+				
 		
 		#Model parameters per rhs
 		
