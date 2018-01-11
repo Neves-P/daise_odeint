@@ -81,6 +81,7 @@ ix4 = nil2lx-2
 #   assign(temp_str1, laavec[il1 + 1][i])
 #   temp_xx2 <- paste("xx2_ix1", i, sep = "_")
 #   }
+
 list_pars <- list(laavec = laavec, lacvec = lacvec, 
 											muvec = muvec, gamvec = gamvec,
 											nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3)
@@ -88,11 +89,12 @@ list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
 										 in1 = in1, in2 = in2, in3 = in3,
 										 ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
 
-make_rhs_1 <- function(list_pars, list_indices){
+make_rhs_1 <- function(list_pars, list_indices)
+	{
 	
 	list_dx1 <- list()
 	list_dx2 <- list()
-	dx1_pars_list <- list()
+	pars_list <- list()
 	
 	for(i in 1:length(list_pars$laavec[list_indices$il1])){
 		
@@ -187,13 +189,13 @@ make_rhs_1 <- function(list_pars, list_indices){
 		
 		# Second product
 		temp_lacvec_il1_plusone <- paste("lacvec_il1_plusone", i, sep = "_")
-		assign(temp_lacvec_il4_plusone, list_pars$lacvec[list_indices$il1 + 1][i])
+		assign(temp_lacvec_il1_plusone, list_pars$lacvec[list_indices$il1 + 1][i])
 		
 		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
 		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
 		
 		temp_xx2_ix1 <- paste("xx2_ix1", i, sep = "_")
-		assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix1][i])
+		assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
 		
 		prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
 		
@@ -202,7 +204,7 @@ make_rhs_1 <- function(list_pars, list_indices){
 		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
 		assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
 		
-		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+		temp_nn2_in2 <- paste("nn_in2", i, sep = "_")
 		assign(temp_nn2_in2, list_pars$nn[list_indices$in2][i])
 		
 		temp_xx2_ix2 <- paste("xx2_ix2", i, sep = "_")
@@ -251,7 +253,7 @@ make_rhs_1 <- function(list_pars, list_indices){
 		temp_laavec_il3_one <- "laavec_il3_one"
 		assign(temp_laavec_il3_one, list_pars$laavec[list_indices$il3][1])
 		
-		temp_lacvec_il3_one <- "lacvec_one"
+		temp_lacvec_il3_one <- "lacvec_il3_one"
 		assign(temp_lacvec_il3_one, list_pars$lacvec[list_indices$il3][1])
 		
 		temp_gamvec_il3_one <- "gamvec_il3_one"
@@ -266,7 +268,7 @@ make_rhs_1 <- function(list_pars, list_indices){
 	
 		prod1 <- paste(neg_term1, "xx3", sep = " * ") 
 		
-		list_dx3 <- prod1
+		vec_dx3 <- prod1
 		
 		#### Model parameters per rhs ####
 		
@@ -274,12 +276,24 @@ make_rhs_1 <- function(list_pars, list_indices){
 		pars <- pars[grepl("temp", pars) & !grepl("xx", pars)]
 		pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
 		
-		# Return
 		
-		return(list(rhs = c(list_dx1, list_dx2, list_dx3), pars = pars_list))
 	}
+	# Return
+	
+	return(list(rhs = c(list_dx1, list_dx2, vec_dx3), pars = pars_list))
 }
 
+make_rhs_1(list_pars = list_pars, list_indices = list_indices)
 
+make_sys <- function(rhs)
+	{
+	
+	ode_system <- list()
+	for(i in 1:length(rhs$rhs)){
+		ode_system[[i]] <- (paste("dx[", i, "] = ", rhs$rhs[[i]], "; ", sep = ""))
+	}
 
- 
+	return(paste(ode_system, sep = "", collapse = ""))
+}
+
+make_sys(make_rhs_1(list_pars, list_indices))
