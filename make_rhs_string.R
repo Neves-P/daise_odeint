@@ -276,7 +276,7 @@ pars <- pars_list_names$pars
 pars[unique(names(pars))]
 
 
-
+# Temporary test string
 sys$rhs <- "dxdt[0] = laavec_il1_plusone_1 * x[0] + lacvec_il4_plusone_1 * x[1] + muvec_il2_plusone_1 * x[2] + lacvec_il1_1 * nn_in1_1 * x[3] + -(muvec_il3_1 + lacvec_il3_1) * nn_in2_1 * x[4] + gamvec_il3_1 * x[4]; 
 dxdt[1] = laavec_il1_plusone_2 * x[5] + lacvec_il4_plusone_2 * x[6] + muvec_il2_plusone_2 * x[7] + lacvec_il1_2 * nn_in1_2 * x[8] + -(muvec_il3_2 + lacvec_il3_2) * nn_in2_2 * x[9] + gamvec_il3_2 * x[9]; 
 dxdt[2] = laavec_il1_plusone_3 * x[10] + lacvec_il4_plusone_3 * x[11] + muvec_il2_plusone_3 * x[12] + lacvec_il1_3 * nn_in1_3 * x[13] + -(muvec_il3_3 + lacvec_il3_3) * nn_in2_3 * x[14] + gamvec_il3_3 * x[14]; 
