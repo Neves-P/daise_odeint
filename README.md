@@ -14,3 +14,7 @@ daisie_odeint is not yet correctly compiling and working with odeintr.
 TODO:
 - Test odeintr::compile_sys function (wrapper from R function to C++ code) with new rhs script
 - Compare odeintr with deSolve, on both results and speed.
+
+
+# References
+Valente, Luis M., Albert B. Phillimore, and Rampal S. Etienne. "Equilibrium and non‐equilibrium dynamics simultaneously operate in the Galápagos islands." Ecology letters 18.8 (2015): 844-852. [doi:10.1111/ele.12461](https://doi.org/10.1111/ele.12461)
