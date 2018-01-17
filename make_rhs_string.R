@@ -53,13 +53,14 @@ list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
 make_rhs_1 <- function(list_pars, list_indices)
 	{
 	
-	list_dx1 <- list()
-	list_dx2 <- list()
+	list_dx <- list()
 	pars_list <- list()
 	par_name_list <- list()
 	init_state_list <- list()
 	init_state_list_names <-list()
 	x_counter <- 0
+	dx_list_counter <- 1
+	
 	for(i in 1:length(list_pars$laavec[list_indices$il1])){
 		
 		#### dx1 ####
@@ -107,7 +108,22 @@ make_rhs_1 <- function(list_pars, list_indices)
 		prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
 		
 		
-		# Negative term
+		
+		# Actual fifth product
+		temp_muvec_il2 <- paste("muvec_il2", i, sep = "_")
+		assign(temp_muvec_il2, list_pars$muvec[list_indices$il2][i])
+		
+		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+		assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+		
+		temp_xx1_ix2 <- paste0("x[", x_counter + 4, "]")
+		assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
+		
+		prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
+		
+		
+		
+		# Negative term CHECK THIS ##############################
 		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
 		assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
 		
@@ -118,25 +134,25 @@ make_rhs_1 <- function(list_pars, list_indices)
 																	 sep = " + "), ")", sep = "")
 		
 		
-		# Fifth product
+		# Sixth product
 		temp_nn_in2 <- paste("nn_in2", i, sep = "_")
 		assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
 		
-		temp_xx1_ix3 <- paste0("x[", x_counter + 4, "]")
+		temp_xx1_ix3 <- paste0("x[", x_counter + 5, "]")
 		assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
 		
-		prod5 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
+		prod6 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
 		
 		
-		# Sixth product
+		# Seventh product
 		temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
 		assign(temp_neggamvec_il3, -list_pars$gamvec[list_indices$il3][i]) # GAMVEC CHANGED SIGN
 		
-		prod6 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
+		prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
 		
 		# dx1 rhs of equation
-		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, sep = " + ")
-		list_dx1[[i]] <- complete_rhs
+		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
+		list_dx[[dx_list_counter]] <- complete_rhs
 		
 		
 		#### dx2 ####
@@ -199,7 +215,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 		
 		# dx2 rhs of equation
 		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, sep = " + ")
-		list_dx2[[i]] <- complete_rhs
+		list_dx[[dx_list_counter + 1]] <- complete_rhs
 		
 		
 		#### dx3 ####
@@ -223,7 +239,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 	
 		prod1 <- paste(neg_term1, paste0("x[", x_counter + 6, "]"), sep = " * ") 
 		
-		vec_dx3 <- prod1
+		list_dx[[dx_list_counter + 2]] <- prod1
 		
 	
 		#### Model parameters per rhs ####
@@ -231,7 +247,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 		# Updates index of X for next equation loop
 		
 		x_counter <- x_counter + 7
-		
+		dx_list_counter <- dx_list_counter + 3
 		
 		local_env_pars <- ls(pattern = "temp")
 		
@@ -246,7 +262,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 	}
 	# Return
 	
-	return(list(rhs = c(list_dx1, list_dx2, vec_dx3), pars = unlist(pars_list), 
+	return(list(rhs = list_dx, pars = unlist(pars_list), 
 							init_state = unlist(init_state_list)))
 }
 
@@ -263,7 +279,8 @@ make_sys <- function(rhs)
 }
 
 sys <- make_rhs_1(list_pars, list_indices)
-eqs <- make_sys(sys$rhs)
+eqs <- make_sys(sys)
+
 write(tail(eqs), "dxdt.txt")
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars[unique(names(pars))]) # Elements of
 # pars had multiple definitions
@@ -272,17 +289,6 @@ pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars[unique(names(pars))]
 
-
-# Temporary test string
-sys$rhs <- "dxdt[0] = laavec_il1_plusone_1 * x[0] + lacvec_il4_plusone_1 * x[1] + muvec_il2_plusone_1 * x[2] + lacvec_il1_1 * nn_in1_1 * x[3] + -(muvec_il3_1 + lacvec_il3_1) * nn_in2_1 * x[4] + gamvec_il3_1 * x[4]; 
-dxdt[1] = laavec_il1_plusone_2 * x[5] + lacvec_il4_plusone_2 * x[6] + muvec_il2_plusone_2 * x[7] + lacvec_il1_2 * nn_in1_2 * x[8] + -(muvec_il3_2 + lacvec_il3_2) * nn_in2_2 * x[9] + gamvec_il3_2 * x[9]; 
-dxdt[2] = laavec_il1_plusone_3 * x[10] + lacvec_il4_plusone_3 * x[11] + muvec_il2_plusone_3 * x[12] + lacvec_il1_3 * nn_in1_3 * x[13] + -(muvec_il3_3 + lacvec_il3_3) * nn_in2_3 * x[14] + gamvec_il3_3 * x[14]; 
-dxdt[3] = laavec_il1_plusone_4 * x[15] + lacvec_il4_plusone_4 * x[16] + muvec_il2_plusone_4 * x[17] + lacvec_il1_4 * nn_in1_4 * x[18] + -(muvec_il3_4 + lacvec_il3_4) * nn_in2_4 * x[19] + gamvec_il3_4 * x[19]; 
-dxdt[4] = gamvec_il3_1 * x[4] + lacvec_il1_plusone_1 * nn_in1_1 * x[0] + muvec_il2_plusone_1 * nn_in2_1 * x[20] + -(muvec_il3_plusone_1 + lacvec_il3_plusone_1) * nn_in3_plusone_1 * x[2] + laavec_il3_plusone_1 * x[2]; 
-dxdt[5] = gamvec_il3_2 * x[9] + lacvec_il1_plusone_2 * nn_in1_2 * x[5] + muvec_il2_plusone_2 * nn_in2_2 * x[21] + -(muvec_il3_plusone_2 + lacvec_il3_plusone_2) * nn_in3_plusone_2 * x[7] + laavec_il3_plusone_2 * x[7]; 
-dxdt[6] = gamvec_il3_3 * x[14] + lacvec_il1_plusone_3 * nn_in1_3 * x[10] + muvec_il2_plusone_3 * nn_in2_3 * x[22] + -(muvec_il3_plusone_3 + lacvec_il3_plusone_3) * nn_in3_plusone_3 * x[12] + laavec_il3_plusone_3 * x[12]; 
-dxdt[7] = gamvec_il3_4 * x[19] + lacvec_il1_plusone_4 * nn_in1_4 * x[15] + muvec_il2_plusone_4 * nn_in2_4 * x[23] + -(muvec_il3_plusone_4 + lacvec_il3_plusone_4) * nn_in3_plusone_4 * x[17] + laavec_il3_plusone_4 * x[17]; 
-dxdt[8] = -(laavec_il3_one + lacvec_il3_one + gamvec_il3_one + muvec_il3_one) * x[24];"
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))]) # Elements of
 list_pars
