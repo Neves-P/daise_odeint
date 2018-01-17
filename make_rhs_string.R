@@ -1,9 +1,9 @@
 #### Testing conditions #### CHECK IF LIST_INDICES WORKS
-lac = .4
-mu = 0.1
-K = 30
-gam = 0.2
-laa = 0.3
+lac = pars[1]
+mu = pars1[2]
+K = pars1[3]
+gam = pars1[4]
+laa = pars1[5]
 kk = 10
 ddep = 0
 x <- c(1,2,3,4,5,6,7,8,9,10)
