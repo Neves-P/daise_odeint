@@ -230,7 +230,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 		
 		# Updates index of X for next equation loop
 		
-		x_counter <- x_counter + 1
+		x_counter <- x_counter + 7
 		
 		
 		local_env_pars <- ls(pattern = "temp")
@@ -254,9 +254,8 @@ make_rhs_1(list_pars = list_pars, list_indices = list_indices)
 
 make_sys <- function(rhs)
 	{
-	
 	ode_system <- list()
-	for(i in 1:(p)){
+	for(i in 1:length(rhs$rhs)){
 		ode_system[[i]] <- (paste0("dxdt[", i - 1, "] = ", rhs$rhs[[i]], "; "))
 	}
 
@@ -264,7 +263,7 @@ make_sys <- function(rhs)
 }
 
 sys <- make_rhs_1(list_pars, list_indices)
-eqs <- make_sys(make_rhs_1(list_pars, list_indices))
+eqs <- make_sys(sys$rhs)
 write(tail(eqs), "dxdt.txt")
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars[unique(names(pars))]) # Elements of
 # pars had multiple definitions
