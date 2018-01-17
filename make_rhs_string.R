@@ -244,11 +244,12 @@ make_rhs_1 <- function(list_pars, list_indices)
 	
 		#### Model parameters per rhs ####
 		
-		# Updates index of X for next equation loop
+		# Updates index of X and dx_list for next equation loop
 		
 		x_counter <- x_counter + 7
 		dx_list_counter <- dx_list_counter + 3
 		
+		# Store initial state and parameters
 		local_env_pars <- ls(pattern = "temp")
 		
 		pars <- local_env_pars[grepl("temp", local_env_pars) &
@@ -282,20 +283,19 @@ sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
 
 write(tail(eqs), "dxdt.txt")
-y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars[unique(names(pars))]) # Elements of
-# pars had multiple definitions
+y <- compile_sys(name = "y", sys$rhs, pars[unique(names(pars))], sys_dim = length(x)) # Elements of
 
+write(y, "the_code_new.cpp")
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars[unique(names(pars))]
 
 
-compile_sys(name = "y", sys$rhs, pars[unique(names(pars))]) # Elements of
+compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 
-init_state <- unlist(pars_list_names$pars)
 
-compiled <- y(initial, 10, 0.01)
+compiled <- y(x, 10, 0.01)
 initial <- c(rep(0, 9))
 length(initial)
 the_code <- y
