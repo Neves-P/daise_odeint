@@ -183,7 +183,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_nn2_in2 <- paste("nn_in2", i, sep = "_")
 		assign(temp_nn2_in2, list_pars$nn[list_indices$in2][i])
 		
-		temp_xx2_ix2 <- paste0("x[", x_counter + 5, "]")
+		temp_xx2_ix2 <- paste0("x[", x_counter + 2, "]")
 		assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
 		
 		prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
