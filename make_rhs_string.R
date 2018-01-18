@@ -123,7 +123,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 		
 		
 		
-		# Negative term CHECK THIS ##############################
+		# Negative term
 		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
 		assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
 		
@@ -145,8 +145,10 @@ make_rhs_1 <- function(list_pars, list_indices)
 		
 		
 		# Seventh product
-		temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
-		assign(temp_neggamvec_il3, -list_pars$gamvec[list_indices$il3][i]) # GAMVEC CHANGED SIGN
+		# This gamvec is assign the regular (non negative) value of gam
+		# The string is built with a negative sign for correct input in odeintr
+		temp_neggamvec_il3 <- paste("- gamvec_il3", i, sep = "_")
+		assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
 		
 		prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
 		
