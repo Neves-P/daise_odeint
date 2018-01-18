@@ -71,9 +71,12 @@ make_rhs_1 <- function(list_pars, list_indices)
 
 		temp_xx2_ix1 <- paste0("x[", x_counter, "]")
 		assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
-		
-		prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
-		
+
+		if(get(temp_laavec_il1_plusone) * get(temp_xx2_ix1) != 0){
+		prod1 <- paste(laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
+		}else{
+		  prod1 <- "0"
+		}
 		
 		# Second product
 		temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
@@ -82,8 +85,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx2_ix4 <- paste0("x[", x_counter + 1, "]")
 		assign(temp_xx2_ix4, xx2[ix4][i])
 		
+		if(get(temp_lacvec_il4_plusone) * get(temp_xx2_ix4) != 0){
 		prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
-		
+		}else{
+		  prod2 <- "0"
+		}
 		
 		# Third product
 		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
@@ -92,8 +98,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx2_ix3 <- paste0("x[", x_counter + 2, "]")
 		assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
 		
+		if(get(temp_muvec_il2_plusone) * get(temp_xx2_ix3) != 0){
 		prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
-
+		}else{
+		  prod3 <- "0"
+		}
 		
 		# Fourth product
 		temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
@@ -105,11 +114,13 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx1_ix1 <- paste0("x[", x_counter + 3, "]")
 		assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
 		
+		if((get(temp_lacvec_il1) * get(temp_nn_in1) * get(temp_xx1_ix1)) != 0){
 		prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
+		}else{
+		  prod4 <- "0"
+		}
 		
-		
-		
-		# Actual fifth product
+		# Fifth product
 		temp_muvec_il2 <- paste("muvec_il2", i, sep = "_")
 		assign(temp_muvec_il2, list_pars$muvec[list_indices$il2][i])
 		
@@ -119,9 +130,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx1_ix2 <- paste0("x[", x_counter + 4, "]")
 		assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
 		
+		if((get(temp_muvec_il2) * get(temp_nn_in2) * get(temp_xx1_ix2)) !=  0){
 		prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
-		
-		
+		}else{
+		  prod5 <- "0"
+		}
 		
 		# Negative term
 		temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
@@ -141,8 +154,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx1_ix3 <- paste0("x[", x_counter + 5, "]")
 		assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
 		
+		if((get(temp_nn_in2) * get(temp_xx1_ix3)) != 0){ # !SHORTENED CONTIDIONAL TEST!
 		prod6 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
-		
+		}else{
+		  prod6 <- "0"
+		}
 		
 		# Seventh product
 		# This gamvec is assign the regular (non negative) value of gam
@@ -150,8 +166,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_neggamvec_il3 <- paste("- gamvec_il3", i, sep = "_")
 		assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
 		
+		if((get(temp_neggamvec_il3) * get(temp_xx1_ix3)) != 0){
 		prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
-		
+		}else{
+		  prod7 <- "0"
+		}
 		# dx1 rhs of equation
 		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
 		list_dx[[dx_list_counter]] <- complete_rhs
@@ -163,9 +182,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_gamvec_il3 <- paste("gamvec_il3", i, sep = "_")
 		assign(temp_gamvec_il3, list_pars$gamvec[list_indices$il3][i])
 		
-		
+		if(get(temp_gamvec_il3) * get(temp_xx1_ix3)){
 		prod1 <- paste(temp_gamvec_il3, temp_xx1_ix3, sep = " * ")
-		
+		}else{
+		prod1 <- "0"
+		}
 		
 		# Second product
 		temp_lacvec_il1_plusone <- paste("lacvec_il1_plusone", i, sep = "_")
@@ -174,9 +195,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_nn_in1 <- paste("nn_in1", i, sep = "_")
 		assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
 		
-		
+		if(get(temp_lacvec_il1_plusone) * get(temp_nn_in1)){
 		prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
-		
+		}else{
+		  prod2 <- "0"
+		}
 
 		# Third product
 		temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
@@ -188,8 +211,11 @@ make_rhs_1 <- function(list_pars, list_indices)
 		temp_xx2_ix2 <- paste0("x[", x_counter + 2, "]")
 		assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
 		
-		prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
-		
+		if(get(temp_muvec_il2_plusone) * get(temp_nn_in2) * get(temp_xx2_ix2)){
+		  prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
+		}else{
+		  prod3 <- "0"
+		}
 		
 		# Negative term
 		temp_muvec_il3_plusone <- paste("muvec_il3_plusone", i, sep= "_")
@@ -201,19 +227,25 @@ make_rhs_1 <- function(list_pars, list_indices)
 		neg_term1 <- paste("-(", paste(temp_muvec_il3_plusone, temp_lacvec_il3_plusone, 
 																	 sep = " + "), ")", sep = "")
 		
-		# Fourth product
+		# Fourth product !IGNORED NEGATIVE TERM FOR IF STATEMENT!
 		temp_nn_in3_plusone <- paste("nn_in3_plusone", i, sep = "_")
 		assign(temp_nn_in3_plusone, list_pars$nn[list_indices$in3 + 1][i])
 		
-		prod4 <- paste(neg_term1, temp_nn_in3_plusone, temp_xx2_ix3, sep = " * ")
-		
+		if(get(temp_nn_in3_plusone) * get(temp_xx2_ix3)){
+		  prod4 <- paste(neg_term1, temp_nn_in3_plusone, temp_xx2_ix3, sep = " * ")
+		}else{
+		  prod4 <- "0"
+		}
 		
 		# Fifth product
 		temp_laavec_il3_plusone <- paste("laavec_il3_plusone", i, sep = "_")
 		assign(temp_laavec_il3_plusone, list_pars$laavec[list_indices$il3 + 1][i])
 		
-		
+		if(get(temp_laavec_il3_plusone) * get(temp_xx2_ix3)){
 		prod5 <- paste(temp_laavec_il3_plusone, temp_xx2_ix3, sep = " * ")
+		}else{
+		prod5 <- "0"  
+		}
 		
 		# dx2 rhs of equation
 		complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, sep = " + ")
@@ -238,8 +270,13 @@ make_rhs_1 <- function(list_pars, list_indices)
 		neg_term1 <- paste("-(", paste(temp_laavec_il3_one, temp_lacvec_il3_one,
 																	 temp_gamvec_il3_one, temp_muvec_il3_one,
 																	 sep = " + "), ")", sep = "")
-	
-		prod1 <- paste(neg_term1, paste0("x[", x_counter + 6, "]"), sep = " * ") 
+	  
+		if(list_pars$xx3 != 0){
+		  prod1 <- paste(neg_term1, paste0("x[", x_counter + 6, "]"), sep = " * ") 
+		}
+		else{
+		  prod1 <- "0"
+		}
 		
 		list_dx[[dx_list_counter + 2]] <- prod1
 		
