@@ -58,22 +58,24 @@ make_rhs_1 <- function(list_pars, list_indices)
   par_name_list <- list()
   init_state_list <- list()
   init_state_list_names <-list()
-  x_counter <- 0
   dx_list_counter <- 1
+  x_counter_increase <- 0
+  x_counter <- 0
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
     
-    
+    x_counter <- x_counter + x_counter_increase
     # Generate X first
     
-    x_counter <- x_counter_increase
     
     if(list_pars$xx2[list_indices$ix1][i] != 0){
       temp_xx2_ix1 <- paste0("x[", x_counter, "]")
-      assign(temp_xx2_ix1, xx2[ix1][i])
+      assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+      
     }else{
       temp_xx2_ix1 <- "0"
+      print("test")
     }
     
     if(list_pars$xx2[list_indices$ix4][i] != 0){
@@ -90,7 +92,10 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+    }else{
+      temp_xx2_ix3 <- "0"
     }
+    
     
     if(list_pars$xx1[list_indices$ix1][i] != 0){
       temp_xx1_ix1 <- paste0("x[", x_counter, "]")
@@ -137,6 +142,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       temp_xx3 <- "0"
     }
     
+    print(x_counter)
     
     
     #### dx1 ####
@@ -294,7 +300,6 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     # Updates index of dx_list for next equation loop
     
-    x_counter <- x_counter + x_counter_increase
     dx_list_counter <- dx_list_counter + 3
     
     # Store initial state and parameters
@@ -305,10 +310,10 @@ make_rhs_1 <- function(list_pars, list_indices)
     par_name_list[[i]] <- unlist(unname(mget(pars)))
     pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
     
-    init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
-                                                      & grepl("xx", local_env_pars)])
-    init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
-  }
+#    init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
+                                          #            & grepl("xx", local_env_pars)])
+ #   init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
+ }
   # Return
   
   return(list(rhs = list_dx, pars = unlist(pars_list), 
