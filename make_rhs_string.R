@@ -1,4 +1,8 @@
-#### Testing conditions #### CHECK IF LIST_INDICES WORKS
+library(odeintr)
+library(DAISIE)
+library(beepr)
+
+#### Testing conditions
 lac = pars[1]
 mu = pars1[2]
 K = pars1[3]
@@ -60,22 +64,18 @@ make_rhs_1 <- function(list_pars, list_indices)
   init_state_list_names <-list()
   dx_list_counter <- 1
   x_counter_increase <- 0
-  x_counter <- 0
+  
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
-    
-    x_counter <- x_counter + x_counter_increase
+
     # Generate X first
-    
     
     if(list_pars$xx2[list_indices$ix1][i] != 0){
       temp_xx2_ix1 <- paste0("x[", x_counter, "]")
       assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-      
     }else{
       temp_xx2_ix1 <- "0"
-      print("test")
     }
     
     if(list_pars$xx2[list_indices$ix4][i] != 0){
@@ -92,6 +92,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx2_ix3 <- "0"
     }
@@ -102,6 +103,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx1_ix1 <- "0"
     }
@@ -111,6 +113,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx1_ix2 <- "0"
     }
@@ -120,6 +123,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx1_ix3 <- "0"
     }
@@ -129,6 +133,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx2_ix2 <- "0"
     }
@@ -138,21 +143,20 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx3, list_pars$xx3)
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
+
     }else{
       temp_xx3 <- "0"
     }
-    
-    print(x_counter)
     
     
     #### dx1 ####
     
     # First product
     temp_laavec_il1_plusone <- paste("laavec_il1_plusone", i, sep = "_")
-    assign(temp_laavec_il1_plusone, list_pars$laavec[list_indices$il1+1][i])
+    assign(temp_laavec_il1_plusone, list_pars$laavec[list_indices$il1 + 1][i])
     
     
-    prod1 <- paste(temp_laavec_il1_plusone, temp_laavec_il1_plusone, sep = " * ")
+    prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1 , sep = " * ")
     
     
     
@@ -320,6 +324,8 @@ make_rhs_1 <- function(list_pars, list_indices)
               init_state = unlist(init_state_list)))
 }
 
+
+#### Run code ####
 make_rhs_1(list_pars = list_pars, list_indices = list_indices)
 
 make_sys <- function(rhs)
@@ -336,9 +342,12 @@ sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
 
 write(tail(eqs), "dxdt.txt")
-y <- compile_sys(name = "y", sys$rhs, pars[unique(names(pars))], sys_dim = length(x)) # Elements of
 
-write(y, "the_code_new_clauses.cpp")
+unique_pars <- pars[unique(names(pars))]
+y <- compile_sys(name = "y", make_sys(sys), unique_pars, sys_dim = length(x)) 
+beep(sound = 2)
+
+write(y, "the_code_not_compiling.cpp")
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars[unique(names(pars))]
