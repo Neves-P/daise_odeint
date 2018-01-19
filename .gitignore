@@ -6,3 +6,4 @@ data
 *.Rproj
 *.txt
 *.csv
+.Rproj.user

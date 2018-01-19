@@ -64,7 +64,6 @@ make_rhs_1 <- function(list_pars, list_indices)
   
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
     
-    x_counter_increase = 0
     
     #### dx1 ####
     
@@ -73,12 +72,11 @@ make_rhs_1 <- function(list_pars, list_indices)
     assign(temp_laavec_il1_plusone, list_pars$laavec[list_indices$il1+1][i])
     
     temp_xx2_ix1 <- paste0("x[", x_counter, "]")
-    x_counter <- x_counter + 1
     assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
     
     if(get(temp_laavec_il1_plusone) * get(temp_xx2_ix1) != 0){
       prod1 <- paste(laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter_increase + 1
     }else{
       prod1 <- "0"
     }
@@ -87,12 +85,12 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
     assign(temp_lacvec_il4_plusone, lacvec[il4 + 1][i])
     
-    temp_xx2_ix4 <- paste0("x[", x_counter + 1, "]")
+    temp_xx2_ix4 <- paste0("x[", x_counter, "]")
     assign(temp_xx2_ix4, xx2[ix4][i])
     
     if(get(temp_lacvec_il4_plusone) * get(temp_xx2_ix4) != 0){
       prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod2 <- "0"
     }
@@ -101,12 +99,12 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
     assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
     
-    temp_xx2_ix3 <- paste0("x[", x_counter + 2, "]")
+    temp_xx2_ix3 <- paste0("x[", x_counter, "]")
     assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
     
     if(get(temp_muvec_il2_plusone) * get(temp_xx2_ix3) != 0){
       prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod3 <- "0"
     }
@@ -123,7 +121,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if((get(temp_lacvec_il1) * get(temp_nn_in1) * get(temp_xx1_ix1)) != 0){
       prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod4 <- "0"
     }
@@ -140,7 +138,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if((get(temp_muvec_il2) * get(temp_nn_in2) * get(temp_xx1_ix2)) !=  0){
       prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod5 <- "0"
     }
@@ -165,7 +163,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if((get(temp_nn_in2) * get(temp_xx1_ix3)) != 0){ # !SHORTENED CONTIDIONAL TEST!
       prod6 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod6 <- "0"
     }
@@ -178,7 +176,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if((get(temp_neggamvec_il3) * get(temp_xx1_ix3)) != 0){
       prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod7 <- "0"
     }
@@ -195,7 +193,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if(get(temp_gamvec_il3) * get(temp_xx1_ix3)){
       prod1 <- paste(temp_gamvec_il3, temp_xx1_ix3, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod1 <- "0"
     }
@@ -209,7 +207,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if(get(temp_lacvec_il1_plusone) * get(temp_nn_in1)){
       prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
     }else{
       prod2 <- "0"
     }
@@ -225,8 +223,8 @@ make_rhs_1 <- function(list_pars, list_indices)
     assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
     
     if(get(temp_muvec_il2_plusone) * get(temp_nn_in2) * get(temp_xx2_ix2)){
-      x_counter_increase <- x_counter_increase + 1
       prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
+      x_counter <- x_counter + 1
     }else{
       prod3 <- "0"
     }
@@ -247,6 +245,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if(get(temp_nn_in3_plusone) * get(temp_xx2_ix3)){
       prod4 <- paste(neg_term1, temp_nn_in3_plusone, temp_xx2_ix3, sep = " * ")
+      x_counter <- x_counter + 1
     }else{
       prod4 <- "0"
     }
@@ -257,6 +256,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     if(get(temp_laavec_il3_plusone) * get(temp_xx2_ix3)){
       prod5 <- paste(temp_laavec_il3_plusone, temp_xx2_ix3, sep = " * ")
+      x_counter <- x_counter + 1
     }else{
       prod5 <- "0"  
     }
@@ -286,8 +286,9 @@ make_rhs_1 <- function(list_pars, list_indices)
                                    sep = " + "), ")", sep = "")
     
     if(list_pars$xx3 != 0){
-      x_counter_increase <- x_counter_increase + 1
+      x_counter <- x_counter + 1
       prod1 <- paste(neg_term1, paste0("x[", x_counter + x_counter_increase, "]"), sep = " * ") 
+      
     }
     else{
       prod1 <- "0"
