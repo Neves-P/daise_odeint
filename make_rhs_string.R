@@ -69,6 +69,9 @@ make_rhs_1 <- function(list_pars, list_indices)
 
     # Generate X first
     
+    x_counter <- 0 
+
+    
     if(list_pars$xx2[list_indices$ix1][i] != 0){
       temp_xx2_ix1 <- paste0("x[", x_counter, "]")
       assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
@@ -99,7 +102,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     
     if(list_pars$xx1[list_indices$ix1][i] != 0){
-      temp_xx1_ix1 <- paste0("x[", x_counter, "]")
+      temp_xx1_ix1 <- paste0("x[", x_counter + 1, "]")
       assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
