@@ -364,15 +364,14 @@ pars <- pars[unique(names(pars))]
 y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = 13) 
 beep(sound = 2)
 
-y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars) 
+y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars, sys_dim = 99) 
 beep(sound = 2)
 write(y, "temp_code.cpp")
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
-
-
-compiled <- y(x, 10, 0.1)
+x[1:99]
+compiled <- y(x[1:99], 10, 0.1)
 x <- c(1:10)
 length(initial)
 the_code <- y
