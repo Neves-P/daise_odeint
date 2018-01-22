@@ -10,7 +10,7 @@ gam = pars1[4]
 laa = pars1[5]
 kk = 10
 ddep = 0
-x <- c(1,2,3,4,5,6,7,8,9,10)
+x <- c(1:10)
 lx = (length(x) - 1)/2
 
 nn = -2:(lx+2*kk+1)
@@ -69,7 +69,7 @@ make_rhs_1 <- function(list_pars, list_indices)
 
     # Generate X first
     
-    x_counter <- 0 
+    x_counter <- x_counter_increase 
 
     
     if(list_pars$xx2[list_indices$ix1][i] != 0){
@@ -297,7 +297,7 @@ make_rhs_1 <- function(list_pars, list_indices)
                                    temp_gamvec_il3_one, temp_muvec_il3_one,
                                    sep = " + "), ")", sep = "")
     
-    prod1 <- paste(neg_term1, paste0("x[", x_counter, "]"), sep = " * ") 
+    prod1 <- paste(neg_term1, temp_xx3, sep = " * ") 
     
     
     list_dx[[dx_list_counter + 2]] <- prod1
@@ -350,7 +350,7 @@ unique_pars <- pars[unique(names(pars))]
 y <- compile_sys(name = "y", make_sys(sys), unique_pars, sys_dim = length(x)) 
 beep(sound = 2)
 
-write(y, "the_code_not_compiling.cpp")
+
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars[unique(names(pars))]
