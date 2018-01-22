@@ -65,6 +65,7 @@ make_rhs_1 <- function(list_pars, list_indices)
   dx_list_counter <- 1
   x_counter_increase <- 0
   dx_list_counter_increase <- 0
+  
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
 
     # Generate X first
@@ -255,7 +256,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     neg_term1 <- paste("-(", paste(temp_muvec_il3_plusone, temp_lacvec_il3_plusone, 
                                    sep = " + "), ")", sep = "")
     
-    # Fourth product !IGNORED NEGATIVE TERM FOR IF STATEMENT!
+    # Fourth product
     temp_nn_in3_plusone <- paste("nn_in3_plusone", i, sep = "_")
     assign(temp_nn_in3_plusone, list_pars$nn[list_indices$in3 + 1][i])
     
@@ -302,6 +303,7 @@ make_rhs_1 <- function(list_pars, list_indices)
         
       }else{
         temp_xx3 <- "0.0"
+        assign(temp_xx3, ) ## FIX INIT STATE LIST!
       }
       
       prod1 <- paste(neg_term1, temp_xx3, sep = " * ")
@@ -326,9 +328,10 @@ make_rhs_1 <- function(list_pars, list_indices)
     par_name_list[[i]] <- unlist(unname(mget(pars)))
     pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
     
-   # init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
-                                          #            & grepl("xx", local_env_pars)])
-   # init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
+    init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
+                                                      & grepl("xx", local_env_pars)])
+                                                      
+    init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
  }
   # Return
   
@@ -364,16 +367,18 @@ pars <- pars[unique(names(pars))]
 y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = 13) 
 beep(sound = 2)
 
-y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars, sys_dim = 99) 
+y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars, sys_dim = length(x)) 
 beep(sound = 2)
-write(y, "temp_code.cpp")
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 x[1:99]
-compiled <- y(x[1:99], 10, 0.1)
+compiled <- y(x, 10, 0.1)
 x <- c(1:10)
 length(initial)
 the_code <- y
 write(the_code, "the_code")
+
+
+write.csv2(compiled, "odeintr_example.csv")
 
