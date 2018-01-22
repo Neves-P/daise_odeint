@@ -78,7 +78,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
     }else{
-      temp_xx2_ix1 <- "0"
+      temp_xx2_ix1 <- "0.0"
     }
     
     if(list_pars$xx2[list_indices$ix4][i] != 0){
@@ -87,7 +87,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
     }else{
-      temp_xx2_ix4 <- "0"
+      temp_xx2_ix4 <- "0.0"
     }
     
     if(list_pars$xx2[list_indices$ix3][i] != 0){
@@ -97,7 +97,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx2_ix3 <- "0"
+      temp_xx2_ix3 <- "0.0"
     }
     
     
@@ -108,7 +108,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx1_ix1 <- "0"
+      temp_xx1_ix1 <- "0.0"
     }
     
     if(list_pars$xx1[list_indices$ix2][i] != 0){
@@ -118,7 +118,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx1_ix2 <- "0"
+      temp_xx1_ix2 <- "0.0"
     }
     
     if(list_pars$xx1[list_indices$ix3][i] != 0){
@@ -128,7 +128,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx1_ix3 <- "0"
+      temp_xx1_ix3 <- "0.0"
     }
     
     if(list_pars$xx2[list_indices$ix2][i] != 0){
@@ -138,7 +138,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx2_ix2 <- "0"
+      temp_xx2_ix2 <- "0.0"
     }
     
     if(list_pars$xx3 != 0){
@@ -148,7 +148,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       x_counter_increase <- x_counter_increase + 1
 
     }else{
-      temp_xx3 <- "0"
+      temp_xx3 <- "0.0"
     }
     
     
@@ -202,7 +202,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
     assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
     
-    neg_term1 <- paste("-(", paste(temp_muvec_il3, temp_lacvec_il3, 
+    neg_term1 <- paste("(-1.0) * (", paste(temp_muvec_il3, temp_lacvec_il3, 
                                    sep = " + "), ")", sep = "")
     
     
@@ -215,10 +215,10 @@ make_rhs_1 <- function(list_pars, list_indices)
     # Seventh product
     # This gamvec is assign the regular (non negative) value of gam
     # The string is built with a negative sign for correct input in odeintr
-    temp_neggamvec_il3 <- paste("- gamvec_il3", i, sep = "_")
+    temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
     
-    prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
+    prod7 <- paste(paste0("(-1.0) * " , temp_neggamvec_il3), temp_xx1_ix3, sep = " * ")
     
     # dx1 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
@@ -327,10 +327,6 @@ make_rhs_1 <- function(list_pars, list_indices)
               init_state = unlist(init_state_list)))
 }
 
-
-#### Run code ####
-make_rhs_1(list_pars = list_pars, list_indices = list_indices)
-
 make_sys <- function(rhs)
 {
   ode_system <- list()
@@ -341,20 +337,28 @@ make_sys <- function(rhs)
   return(paste(ode_system, sep = "", collapse = ""))
 }
 
+
+#### Run code ####
+make_rhs_1(list_pars = list_pars, list_indices = list_indices)
+
+
+
 sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
 
 write(tail(eqs), "dxdt.txt")
 
 unique_pars <- pars[unique(names(pars))]
-y <- compile_sys(name = "y", make_sys(sys), unique_pars, sys_dim = length(x)) 
+y <- compile_sys(name = "y", make_sys(sys), pars) 
 beep(sound = 2)
-
+write(eqs, file = "dxdt.txt")
 
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
-pars[unique(names(pars))]
-
+pars <- pars[unique(names(pars))]
+compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars) 
+beep(sound = 2)
+write(y, "temp_code.cpp")
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
