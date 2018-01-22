@@ -219,6 +219,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
     
     prod7 <- paste(paste0("(-1.0) * " , temp_neggamvec_il3), temp_xx1_ix3, sep = " * ")
+
     
     # dx1 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
@@ -349,14 +350,17 @@ eqs <- make_sys(sys)
 write(tail(eqs), "dxdt.txt")
 
 unique_pars <- pars[unique(names(pars))]
+
 y <- compile_sys(name = "y", make_sys(sys), pars) 
+
 beep(sound = 2)
 write(eqs, file = "dxdt.txt")
 
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars <- pars[unique(names(pars))]
-compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars) 
+
+y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars) 
 beep(sound = 2)
 write(y, "temp_code.cpp")
 
