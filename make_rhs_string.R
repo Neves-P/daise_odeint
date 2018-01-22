@@ -215,10 +215,10 @@ make_rhs_1 <- function(list_pars, list_indices)
     # Seventh product
     # This gamvec is assign the regular (non negative) value of gam
     # The string is built with a negative sign for correct input in odeintr
-    temp_neggamvec_il3 <- paste("- gamvec_il3", i, sep = "_")
+    temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
     
-    prod7 <- paste(temp_neggamvec_il3, temp_xx1_ix3, sep = " * ")
+    prod7 <- paste(paste0("(-1) * " , temp_neggamvec_il3), temp_xx1_ix3, sep = " * ")
     
     # dx1 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
@@ -327,10 +327,6 @@ make_rhs_1 <- function(list_pars, list_indices)
               init_state = unlist(init_state_list)))
 }
 
-
-#### Run code ####
-make_rhs_1(list_pars = list_pars, list_indices = list_indices)
-
 make_sys <- function(rhs)
 {
   ode_system <- list()
@@ -341,20 +337,28 @@ make_sys <- function(rhs)
   return(paste(ode_system, sep = "", collapse = ""))
 }
 
+
+#### Run code ####
+make_rhs_1(list_pars = list_pars, list_indices = list_indices)
+
+
+
 sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
 
 write(tail(eqs), "dxdt.txt")
 
 unique_pars <- pars[unique(names(pars))]
-y <- compile_sys(name = "y", make_sys(sys), unique_pars, sys_dim = length(x)) 
+y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = length(x)) 
 beep(sound = 2)
-
+write(eqs, file = "dxdt.txt")
 
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
-pars[unique(names(pars))]
-
+pars <- pars[unique(names(pars))]
+y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars) 
+beep(sound = 2)
+write(y, "temp_code.cpp")
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
