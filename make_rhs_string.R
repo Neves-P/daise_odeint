@@ -3,7 +3,7 @@ library(DAISIE)
 library(beepr)
 
 #### Testing conditions
-lac = pars[1]
+lac = pars1[1]
 mu = pars1[2]
 K = pars1[3]
 gam = pars1[4]
@@ -47,11 +47,11 @@ ix4 = nil2lx-2
 # List of pars and indices
 
 list_pars <- list(laavec = laavec, lacvec = lacvec, 
-											muvec = muvec, gamvec = gamvec,
-											nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3)
+                  muvec = muvec, gamvec = gamvec,
+                  nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3)
 list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
-										 in1 = in1, in2 = in2, in3 = in3,
-										 ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
+                     in1 = in1, in2 = in2, in3 = in3,
+                     ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
 
 ##### Function to get str of all rhs and pars ####
 make_rhs_1 <- function(list_pars, list_indices)
@@ -65,13 +65,12 @@ make_rhs_1 <- function(list_pars, list_indices)
   dx_list_counter <- 1
   x_counter_increase <- 0
   dx_list_counter_increase <- 0
-  
+  `0.0` <- 0
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
-
+    
     # Generate X first
     
     x_counter <- x_counter_increase 
-
     
     if(list_pars$xx2[list_indices$ix1][i] != 0){
       temp_xx2_ix1 <- paste0("x[", x_counter, "]")
@@ -96,7 +95,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-
+      
     }else{
       temp_xx2_ix3 <- "0.0"
     }
@@ -107,7 +106,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-
+      
     }else{
       temp_xx1_ix1 <- "0.0"
     }
@@ -117,7 +116,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-
+      
     }else{
       temp_xx1_ix2 <- "0.0"
     }
@@ -127,7 +126,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-
+      
     }else{
       temp_xx1_ix3 <- "0.0"
     }
@@ -137,7 +136,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
-
+      
     }else{
       temp_xx2_ix2 <- "0.0"
     }
@@ -183,8 +182,8 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_muvec_il2 <- paste("muvec_il2", i, sep = "_")
     assign(temp_muvec_il2, list_pars$muvec[list_indices$il2][i])
     
-    temp_nn_in2 <- paste("nn_in2", i, sep = "_")
-    assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+    temp_nn_in3 <- paste("nn_in2", i, sep = "_")
+    assign(temp_nn_in3, list_pars$nn[list_indices$in2][i])
     
     prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
     
@@ -196,14 +195,14 @@ make_rhs_1 <- function(list_pars, list_indices)
     assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
     
     neg_term1 <- paste("(-1.0) * (", paste(temp_muvec_il3, temp_lacvec_il3, 
-                                   sep = " + "), ")", sep = "")
+                                           sep = " + "), ")", sep = "")
     
     
     # Sixth product
-    temp_nn_in2 <- paste("nn_in2", i, sep = "_")
-    assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
+    temp_nn_in3 <- paste("nn_in3", i, sep = "_")
+    assign(temp_nn_in3, list_pars$nn[list_indices$in3][i])
     
-    prod6 <- paste(neg_term1, temp_nn_in2, temp_xx1_ix3, sep = " * ")
+    prod6 <- paste(neg_term1, temp_nn_in3, temp_xx1_ix3, sep = " * ")
     
     # Seventh product
     # This gamvec is assign the regular (non negative) value of gam
@@ -212,7 +211,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
     
     prod7 <- paste(paste0("(-1.0) * " , temp_neggamvec_il3), temp_xx1_ix3, sep = " * ")
-
+    
     
     # dx1 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
@@ -294,7 +293,7 @@ make_rhs_1 <- function(list_pars, list_indices)
                                      sep = " + "), ")", sep = "")
       
       if(list_pars$xx3 != 0){
-
+        
         temp_xx3 <- paste0("x[", x_counter, "]")
         
         assign(temp_xx3, list_pars$xx3)
@@ -302,8 +301,7 @@ make_rhs_1 <- function(list_pars, list_indices)
         x_counter_increase <- x_counter_increase + 1
         
       }else{
-        temp_xx3 <- "0.0"
-        assign(temp_xx3, ) ## FIX INIT STATE LIST!
+        temp_xx3 <- "0.0" ## FIX INIT STATE LIST!
       }
       
       prod1 <- paste(neg_term1, temp_xx3, sep = " * ")
@@ -330,9 +328,9 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
                                                       & grepl("xx", local_env_pars)])
-                                                      
+    
     init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
- }
+  }
   # Return
   
   return(list(rhs = list_dx, pars = unlist(pars_list), 
@@ -351,7 +349,6 @@ make_sys <- function(rhs)
 
 
 #### Run code ####
-# make_rhs_1(list_pars = list_pars, list_indices = list_indices)
 
 
 
@@ -364,7 +361,7 @@ pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = 13) 
+y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = 201) 
 beep(sound = 2)
 
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars, sys_dim = length(x)) 
@@ -373,8 +370,9 @@ beep(sound = 2)
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 x[1:99]
-compiled <- y(x, 10, 0.1)
+compiled <- y(x, 10, .1)
 x <- c(1:10)
+
 length(initial)
 the_code <- y
 write(the_code, "the_code")
