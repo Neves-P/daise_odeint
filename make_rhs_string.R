@@ -8,7 +8,7 @@ mu = pars1[2]
 K = pars1[3]
 gam = pars1[4]
 laa = pars1[5]
-kk = 10
+kk = 0
 ddep = 0
 x <- c(1:10)
 lx = (length(x) - 1)/2
@@ -65,81 +65,38 @@ make_rhs_1 <- function(list_pars, list_indices)
   dx_list_counter <- 1
   x_counter_increase <- 0
   dx_list_counter_increase <- 0
-  `0.0` <- 0
+  # `0.0` <- 0
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
     
     # Generate X first
     
     x_counter <- x_counter_increase 
     
-    if(list_pars$xx2[list_indices$ix1][i] != 0){
-      temp_xx2_ix1 <- paste0("x[", x_counter, "]")
-      assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-    }else{
-      temp_xx2_ix1 <- "0.0"
-    }
-    
-    if(list_pars$xx2[list_indices$ix4][i] != 0){
-      temp_xx2_ix4 <- paste0("x[", x_counter, "]")
-      assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-    }else{
-      temp_xx2_ix4 <- "0.0"
-    }
-    
-    if(list_pars$xx2[list_indices$ix3][i] != 0){
-      temp_xx2_ix3 <- paste0("x[", x_counter, "]")
-      assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-    }else{
-      temp_xx2_ix3 <- "0.0"
-    }
     
     
-    if(list_pars$xx1[list_indices$ix1][i] != 0){
-      temp_xx1_ix1 <- paste0("x[", x_counter + 1, "]")
-      assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-    }else{
-      temp_xx1_ix1 <- "0.0"
-    }
+    # if(list_pars$xx1[list_indices$ix1][i] != 0){
+    temp_xx1_ix1 <- paste0("x[", x_counter, "]")
+    assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+    temp_xx1_ix2 <- paste0("x[", x_counter, "]")
+    assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
+    temp_xx1_ix3 <- paste0("x[", x_counter, "]")
+    assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
+    x_counter <- x_counter + 1
+    x_counter_increase <- x_counter_increase + 1
     
-    if(list_pars$xx1[list_indices$ix2][i] != 0){
-      temp_xx1_ix2 <- paste0("x[", x_counter, "]")
-      assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-    }else{
-      temp_xx1_ix2 <- "0.0"
-    }
+    # if(i %% 2 == 0){
+    temp_xx2_ix1 <- paste0("x[", x_counter, "]")
+    temp_xx2_ix4 <- paste0("x[", x_counter, "]")
+    temp_xx2_ix3 <- paste0("x[", x_counter, "]")
+    temp_xx2_ix2 <- paste0("x[", x_counter, "]")
+    assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
+    assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+    assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
+    assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
+    x_counter <- x_counter + 1
+    x_counter_increase <- x_counter_increase + 1
     
-    if(list_pars$xx1[list_indices$ix3][i] != 0){
-      temp_xx1_ix3 <- paste0("x[", x_counter, "]")
-      assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-    }else{
-      temp_xx1_ix3 <- "0.0"
-    }
     
-    if(list_pars$xx2[list_indices$ix2][i] != 0){
-      temp_xx2_ix2 <- paste0("x[", x_counter, "]")
-      assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-    }else{
-      temp_xx2_ix2 <- "0.0"
-    }
     
     
     
@@ -292,17 +249,17 @@ make_rhs_1 <- function(list_pars, list_indices)
                                      temp_gamvec_il3_one, temp_muvec_il3_one,
                                      sep = " + "), ")", sep = "")
       
-      if(list_pars$xx3 != 0){
-        
-        temp_xx3 <- paste0("x[", x_counter, "]")
-        
-        assign(temp_xx3, list_pars$xx3)
-        x_counter <- x_counter + 1
-        x_counter_increase <- x_counter_increase + 1
-        
-      }else{
-        temp_xx3 <- "0.0" ## FIX INIT STATE LIST!
-      }
+      # if(list_pars$xx3 != 0){
+      
+      temp_xx3 <- paste0("x[", x_counter, "]")
+      
+      assign(temp_xx3, list_pars$xx3)
+      x_counter <- x_counter + 1
+      x_counter_increase <- x_counter_increase + 1
+      
+      # }else{
+      #   temp_xx3 <- "0.0" ## FIX INIT STATE LIST!
+      # }
       
       prod1 <- paste(neg_term1, temp_xx3, sep = " * ")
       
@@ -348,7 +305,7 @@ make_sys <- function(rhs)
 }
 
 
-#### Run code ####
+#### Run code #### CHECK X[] INDICES
 
 
 
@@ -361,22 +318,22 @@ pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", make_sys(sys), pars, sys_dim = 201) 
+y <- compile_sys(name = "y", eqs, pars, sys_dim = 201) 
 beep(sound = 2)
 
-y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = pars, sys_dim = length(x)) 
+y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = rep(1, 10), sys_dim = length(x)) 
 beep(sound = 2)
 
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 x[1:99]
-compiled <- y(x, 10, .1)
+compiled <- y(x, 4, .1)
 x <- c(1:10)
 
 length(initial)
 the_code <- y
 write(the_code, "the_code")
 
-
-write.csv2(compiled, "odeintr_example.csv")
+y <- compile_implicit(name = "y", make_sys(sys), pars, sys_dim = 200) 
+beep(sound = 2)
 
