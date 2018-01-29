@@ -249,17 +249,14 @@ make_rhs_1 <- function(list_pars, list_indices)
                                      temp_gamvec_il3_one, temp_muvec_il3_one,
                                      sep = " + "), ")", sep = "")
       
-      # if(list_pars$xx3 != 0){
-      
+
       temp_xx3 <- paste0("x[", x_counter, "]")
       
       assign(temp_xx3, list_pars$xx3)
       x_counter <- x_counter + 1
       x_counter_increase <- x_counter_increase + 1
       
-      # }else{
-      #   temp_xx3 <- "0.0" ## FIX INIT STATE LIST!
-      # }
+
       
       prod1 <- paste(neg_term1, temp_xx3, sep = " * ")
       
@@ -281,7 +278,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     pars <- local_env_pars[grepl("temp", local_env_pars) &
                              !grepl("xx", local_env_pars)]
     par_name_list[[i]] <- unlist(unname(mget(pars)))
-    pars_list[[i]] <- mget(unlist(unname(mget(pars)))) # Recovers parameters into list
+    pars_list[[i]] <- mget(unlist(unname(mget(pars))))
     
     init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
                                                       & grepl("xx", local_env_pars)])
@@ -318,7 +315,7 @@ pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", eqs, pars, sys_dim = 201) 
+y <- compile_sys(name = "y", eqs, pars, sys_dim = 201, atol = abstol, rtol = reltol) 
 beep(sound = 2)
 
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = rep(1, 10), sys_dim = length(x)) 
@@ -327,7 +324,7 @@ beep(sound = 2)
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 x[1:99]
-compiled <- y(x, 4, .1)
+compiled <- y(x, 4, .01)
 x <- c(1:10)
 
 length(initial)
