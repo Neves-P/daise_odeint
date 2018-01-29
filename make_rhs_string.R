@@ -91,7 +91,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_xx2_ix2 <- paste0("x[", x_counter, "]")
     assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
     assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
-    assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
+    assign(temp_xx2_ix4, list_pars$xx2[list_indices$ix4][i])
     assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
     x_counter <- x_counter + 1
     x_counter_increase <- x_counter_increase + 1
@@ -139,8 +139,8 @@ make_rhs_1 <- function(list_pars, list_indices)
     temp_muvec_il2 <- paste("muvec_il2", i, sep = "_")
     assign(temp_muvec_il2, list_pars$muvec[list_indices$il2][i])
     
-    temp_nn_in3 <- paste("nn_in2", i, sep = "_")
-    assign(temp_nn_in3, list_pars$nn[list_indices$in2][i])
+    temp_nn_in2 <- paste("nn_in2", i, sep = "_")
+    assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
     
     prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
     
@@ -334,6 +334,6 @@ length(initial)
 the_code <- y
 write(the_code, "the_code")
 
-y <- compile_implicit(name = "y", make_sys(sys), pars, sys_dim = 200) 
+# y <- compile_implicit(name = "y", make_sys(sys), pars, sys_dim = 200) 
 beep(sound = 2)
 
