@@ -14,8 +14,8 @@ x <- c(1:10)
 lx = (length(x) - 1)/2
 
 nn = -2:(lx+2*kk+1)
-lnn = length(nn)         # 
-nn = pmax(rep(0,lnn),nn) # Number of species in clade
+lnn = length(nn)          
+nn = pmax(rep(0,lnn),nn)
 
 # ddep = 0
 laavec = laa * rep(1,lnn)
