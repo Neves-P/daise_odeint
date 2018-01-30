@@ -227,7 +227,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     # dx2 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, sep = " + ")
     list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
-    dx_list_counter_increase <- dx_list_counter_increase + 1
+    dx_list_counter_increase <- dx_list_counter_increase + 2
     
     #### dx3 ####
     if(i == length(list_pars$laavec[list_indices$il1])){
@@ -308,8 +308,6 @@ make_sys <- function(rhs)
 
 sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
-
-sys$rhs
 
 pars_list_names <- make_rhs_1(list_pars, list_indices)
 pars <- pars_list_names$pars
