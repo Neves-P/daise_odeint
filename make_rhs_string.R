@@ -63,43 +63,73 @@ make_rhs_1 <- function(list_pars, list_indices)
   init_state_list <- list()
   init_state_list_names <-list()
   dx_list_counter <- 1
-  x_counter_increase <- 0
   dx_list_counter_increase <- 0
-  # `0.0` <- 0
+  x_counter_2 <- 1
+
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
     
     # Generate X first
     
-    x_counter <- x_counter_increase 
+    
+    if(list_pars$xx1[list_indices$ix1][i] != 0){
+      temp_xx1_ix1 <- paste0("x[", x_counter - 1, "]")
+      assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+      
+    }else{
+      temp_xx1_ix1 <- "0.0"
+    }
+    
+    if(list_pars$xx1[list_indices$ix2][i] != 0){
+      temp_xx1_ix2 <- paste0("x[", x_counter - 1, "]")
+      assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
+
+      
+    }else{
+      temp_xx1_ix2 <- "0.0"
+    }
+    
+    if(list_pars$xx1[list_indices$ix3][i] != 0){
+      temp_xx1_ix3 <- paste0("x[", x_counter - 1, "]")
+      assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
+      
+      
+    }else{
+      temp_xx1_ix3 <- "0.0"
+    }
     
     
-    
-    # if(list_pars$xx1[list_indices$ix1][i] != 0){
-    temp_xx1_ix1 <- paste0("x[", x_counter, "]")
-    assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
-    temp_xx1_ix2 <- paste0("x[", x_counter, "]")
-    assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
-    temp_xx1_ix3 <- paste0("x[", x_counter, "]")
-    assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
-    x_counter <- x_counter + 1
-    x_counter_increase <- x_counter_increase + 1
-    
-    # if(i %% 2 == 0){
-    temp_xx2_ix1 <- paste0("x[", x_counter, "]")
-    temp_xx2_ix4 <- paste0("x[", x_counter, "]")
-    temp_xx2_ix3 <- paste0("x[", x_counter, "]")
-    temp_xx2_ix2 <- paste0("x[", x_counter, "]")
-    assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
-    assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
-    assign(temp_xx2_ix4, list_pars$xx2[list_indices$ix4][i])
-    assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
-    x_counter <- x_counter + 1
-    x_counter_increase <- x_counter_increase + 1
+    if(list_pars$xx2[list_indices$ix1][i] != 0){
+      temp_xx2_ix1 <- paste0("x[", x_counter_2, "]")
+      assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
+
+    }else{
+      temp_xx2_ix1 <- "0.0"
+    }
     
     
+    if(list_pars$xx2[list_indices$ix2][i] != 0){
+      temp_xx2_ix2 <- paste0("x[", x_counter_2, "]")
+      assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
+      
+    }else{
+      temp_xx2_ix2 <- "0.0"
+    }
     
+    if(list_pars$xx2[list_indices$ix3][i] != 0){
+      temp_xx2_ix3 <- paste0("x[", x_counter_2, "]")
+      assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
+      
+    }else{
+      temp_xx2_ix3 <- "0.0"
+    }
     
-    
+    if(list_pars$xx2[list_indices$ix4][i] != 0){
+      temp_xx2_ix4 <- paste0("x[", x_counter_2, "]")
+      assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
+    }else{
+      temp_xx2_ix4 <- "0.0"
+    }
+
     
     #### dx1 ####
     
@@ -227,7 +257,7 @@ make_rhs_1 <- function(list_pars, list_indices)
     # dx2 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, sep = " + ")
     list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
-    dx_list_counter_increase <- dx_list_counter_increase + 2
+    dx_list_counter_increase <- dx_list_counter_increase + 1
     
     #### dx3 ####
     if(i == length(list_pars$laavec[list_indices$il1])){
@@ -249,19 +279,9 @@ make_rhs_1 <- function(list_pars, list_indices)
                                      temp_gamvec_il3_one, temp_muvec_il3_one,
                                      sep = " + "), ")", sep = "")
       
-
-      temp_xx3 <- paste0("x[", x_counter, "]")
-      
-      assign(temp_xx3, list_pars$xx3)
-      x_counter <- x_counter + 1
-      x_counter_increase <- x_counter_increase + 1
-      
-
+      temp_xx3 <- paste0("x[", i + x_counter_2, "]")
       
       prod1 <- paste(neg_term1, temp_xx3, sep = " * ")
-      
-      
-      
       
       list_dx[[dx_list_counter + dx_list_counter_increase]] <- prod1
       dx_list_counter_increase <- dx_list_counter_increase + 1
@@ -270,7 +290,8 @@ make_rhs_1 <- function(list_pars, list_indices)
     #### Model parameters per rhs ####
     
     # Updates index of dx_list for next equation loop
-    
+    x_counter <- x_counter + 1
+    x_counter_2 <- x_counter_2 + 1
     
     # Store initial state and parameters
     local_env_pars <- ls(pattern = "temp")
@@ -280,11 +301,13 @@ make_rhs_1 <- function(list_pars, list_indices)
     par_name_list[[i]] <- unlist(unname(mget(pars)))
     pars_list[[i]] <- mget(unlist(unname(mget(pars))))
     
-    init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
-                                                      & grepl("xx", local_env_pars)])
-    
-    init_state_list[[i]] <- mget(unlist(unname(init_state_list_names[[i]])))
+    # init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars) 
+                                                      # & grepl("xx", local_env_pars)])
+    # state_names_vector <- unlist(init_state_list_names) 
+    # state_names_vector <- state_names_vector[! state_names_vector %in% c("0.0")]
+    # init_state_list[i] <- unlist(mget(unlist(unname(state_names_vector))))
   }
+  
   # Return
   
   return(list(rhs = list_dx, pars = unlist(pars_list), 
@@ -309,11 +332,10 @@ make_sys <- function(rhs)
 sys <- make_rhs_1(list_pars, list_indices)
 eqs <- make_sys(sys)
 
-pars_list_names <- make_rhs_1(list_pars, list_indices)
-pars <- pars_list_names$pars
+pars <- sys$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", eqs, pars, sys_dim = 201, atol = abstol, rtol = reltol) 
+y <- compile_sys(name = "y", eqs, pars, sys_dim = 5, atol = abstol, rtol = reltol) 
 beep(sound = 2)
 
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = rep(1, 10), sys_dim = length(x)) 
@@ -322,8 +344,13 @@ beep(sound = 2)
 compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 list_pars
 x[1:99]
-compiled <- y(x, 4, .01)
-x <- c(1:10)
+unique(names(sys$init_state))
+init_state_vector <- sys$init_state[unique(names(sys$init_state))]
+compiled <- y(x, 4, .10)
+
+x <- c(1:5)
+
+unique(sys$init_state)
 
 length(initial)
 the_code <- y
