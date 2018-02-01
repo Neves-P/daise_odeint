@@ -335,7 +335,7 @@ eqs <- make_sys(sys)
 pars <- sys$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", eqs, pars, sys_dim = 5, atol = abstol, rtol = reltol) 
+y <- compile_sys(name = "y", eqs, pars, sys_dim = 5, atol = abstol, rtol = reltol, const = TRUE) 
 beep(sound = 2)
 
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = rep(1, 10), sys_dim = length(x)) 
@@ -346,7 +346,7 @@ list_pars
 x[1:99]
 unique(names(sys$init_state))
 init_state_vector <- sys$init_state[unique(names(sys$init_state))]
-compiled <- y(x, 4, .10)
+compiled <- y(probs, 4, .10)
 
 x <- c(1:5)
 
