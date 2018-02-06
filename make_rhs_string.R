@@ -73,34 +73,53 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     # Generate X first
     
-    ## xx1 ##
+    ## xx1 = Qk
     
-    temp_xx1_ix1 <- paste0("x[", x_counter, "]")
-    assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+    if(i != 1){ # n-1 falls out of boundary
+      temp_xx1_ix1 <- paste0("x[", x_counter - 1, "]")
+      assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
+    }else{
+      temp_xx1_ix1 <- "0.0"
+    }
     
+    if(i == length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+      temp_xx1_ix2 <- paste0("x[", x_counter + 1, "]")
+      assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
+    }else{
+      temp_xx1_ix2 <- "0.0"
+    }
     
-    temp_xx1_ix2 <- paste0("x[", x_counter, "]")
-    assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
-    
+    ### Qk,n (n term, no -1 or +1 needed)
     temp_xx1_ix3 <- paste0("x[", x_counter, "]")
     assign(temp_xx1_ix3, list_pars$xx1[list_indices$ix3][i])
     
+    ## xx2 = QMk
     
-    ## xx2 ##
+    if(i != 1){ # n-1 falls out of boundary
+      temp_xx2_ix1 <- paste0("x[", x_counter_2 - 1, "]")
+      assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
+    }else{
+      temp_xx2_ix1 <- "0.0"
+    }
     
-    temp_xx2_ix1 <- paste0("x[", x_counter_2 + lx, "]")
-    assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
+    if(i == length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+      temp_xx2_ix2 <- paste0("x[", x_counter_2 + 1, "]")
+      assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
+    }else{
+      temp_xx2_ix2 <- "0.0"
+    }
     
     
-    temp_xx2_ix2 <- paste0("x[", x_counter_2 + lx, "]")
-    assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
+    ### QMk,n
+      temp_xx2_ix3 <- paste0("x[", x_counter_2, "]")
+      assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
     
-    temp_xx2_ix3 <- paste0("x[", x_counter_2 + lx, "]")
-    assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
-    
-    temp_xx2_ix4 <- paste0("x[", x_counter_2 + lx, "]")
-    assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
-    
+    if(list_pars$xx2[list_indices$ix4][i] != 0){
+      temp_xx2_ix4 <- paste0("x[", x_counter_2 - 2, "]")
+      assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
+    }else{
+      temp_xx2_ix4 <- "0.0"
+    }
     
     
     #### dx1 ####
