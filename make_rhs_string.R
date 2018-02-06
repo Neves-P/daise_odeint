@@ -66,7 +66,7 @@ make_rhs_1 <- function(list_pars, list_indices)
   dx_list_counter <- 1
   dx_list_counter_increase <- 0
   x_counter <- 0
-  x_counter_2 <- 0
+  x_counter_2 <- lx
   
   
   for(i in 1:length(list_pars$laavec[list_indices$il1])){
@@ -82,7 +82,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       temp_xx1_ix1 <- "0.0"
     }
     
-    if(i == length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+    if(i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
       temp_xx1_ix2 <- paste0("x[", x_counter + 1, "]")
       assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
     }else{
@@ -102,19 +102,18 @@ make_rhs_1 <- function(list_pars, list_indices)
       temp_xx2_ix1 <- "0.0"
     }
     
-    if(i == length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+    if(i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
       temp_xx2_ix2 <- paste0("x[", x_counter_2 + 1, "]")
       assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
     }else{
       temp_xx2_ix2 <- "0.0"
     }
     
-    
-    ### QMk,n
+    ### QMk,n (n term, no -1 or +1 needed)
       temp_xx2_ix3 <- paste0("x[", x_counter_2, "]")
       assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
     
-    if(list_pars$xx2[list_indices$ix4][i] != 0){
+    if(i > 2 ){ # n - 2 falls out of boudary
       temp_xx2_ix4 <- paste0("x[", x_counter_2 - 2, "]")
       assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
     }else{
@@ -326,7 +325,7 @@ eqs <- make_sys(sys)
 pars <- sys$pars
 pars <- pars[unique(names(pars))]
 
-y <- compile_sys(name = "y", eqs, pars, sys_dim = 5, atol = abstol, rtol = reltol) 
+y <- compile_sys(name = "y", eqs, pars, sys_dim = 101, atol = abstol, rtol = reltol) 
 beep(sound = 2)
 
 y <- compile_sys(name = "y", make_sys(make_rhs_1(list_pars, list_indices)), pars = rep(1, 10), sys_dim = length(x)) 
