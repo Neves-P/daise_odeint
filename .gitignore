@@ -2,9 +2,9 @@
 *.Rhistory
 *.RData
 *.Ruserdata
-data
+*.Rmd
 *.Rproj
 *.txt
 *.csv
-.Rproj.user
 *.pdf
+*.cpp
