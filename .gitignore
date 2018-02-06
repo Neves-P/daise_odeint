@@ -6,5 +6,9 @@
 *.Rproj
 *.txt
 *.csv
+<<<<<<< HEAD
+=======
+.Rproj.user
+>>>>>>> 02e279e24617d614e69abecac1dcea46a97ccc6e
 *.pdf
 *.cpp
