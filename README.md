@@ -11,9 +11,7 @@ Possible custom Rcpp integration can be implemented in the future.
 The original version of DAISIE can be found on CRAN, [here](https://cran.r-project.org/package=DAISIE).
 
 daisie_odeint is not yet correctly compiling and working with odeintr.
-TODO:
-- Test odeintr::compile_sys function (wrapper from R function to C++ code) with new rhs script
-- Compare odeintr with deSolve, on both results and speed.
+See a roadmap of the project [here](https://github.com/Neves-P/daisie_odeint/projects/1).
 
 
 # References
