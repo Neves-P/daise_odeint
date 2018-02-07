@@ -23,3 +23,4 @@ See a roadmap of the project [here](https://github.com/Neves-P/daisie_odeint/pro
 
 4. Ahnert, Karsten, and Mario Mulansky. 2011. "Odeint – Solving Ordinary Differential Equations in C++." In AIP Conference Proceedings, 1389:1586–89. American Institute of Physics. [doi:10.1063/1.3637934](https://doi.org/10.1063/1.3637934)
 
+5. Bååth, Rasmus. 2015. "beepr: Easily Play Notification Sounds on any Platform." R package version 1.2. https://CRAN.R-project.org/package=beepr
