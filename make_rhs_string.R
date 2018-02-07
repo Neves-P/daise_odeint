@@ -1,3 +1,7 @@
+# Writen by Pedro Neves on 06/02/17, under the GPL-2 license.
+# Code adapted from package DAISIE (Etienne, Valente, Phillimore & Haegeman), 
+# requires package odeintr (Keitt)
+
 library(odeintr)
 library(DAISIE)
 library(beepr)
@@ -113,7 +117,7 @@ make_rhs_1 <- function(list_pars, list_indices)
       temp_xx2_ix3 <- paste0("x[", x_counter_2, "]")
       assign(temp_xx2_ix3, list_pars$xx2[list_indices$ix3][i])
     
-    if(i > 2 ){ # n - 2 falls out of boudary
+    if(i > 2 ){ # n - 2 falls out of boundary
       temp_xx2_ix4 <- paste0("x[", x_counter_2 - 2, "]")
       assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
     }else{
@@ -129,7 +133,6 @@ make_rhs_1 <- function(list_pars, list_indices)
     
     
     prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1 , sep = " * ")
-    
     
     
     # Second product
@@ -290,17 +293,11 @@ make_rhs_1 <- function(list_pars, list_indices)
     par_name_list[[i]] <- unlist(unname(mget(pars)))
     pars_list[[i]] <- mget(unlist(unname(mget(pars))))
     
-    # init_state_list_names[[i]] <- mget(local_env_pars[grepl("temp", local_env_pars)
-    #                                                   & grepl("xx", local_env_pars)])
-    # state_names_vector <- unlist(init_state_list_names)
-    # state_names_vector <- state_names_vector[! state_names_vector %in% c("0.0")]
-    # init_state_list[i] <- unlist(mget(unlist(unname(state_names_vector))))
   }
   
   # Return
   
-  return(list(rhs = list_dx, pars = unlist(pars_list), 
-              init_state = unlist(init_state_list)))
+  return(list(rhs = list_dx, pars = unlist(pars_list)))
 }
 
 
@@ -364,6 +361,7 @@ write.csv(deSolve_101_system, "desolve_101_system.csv")
 write(y_5_system, "5_component_code.cpp")
 write(y_101_system, "101_component_code.cpp")
 
-write(eqs_101_system, "rhs_101.txt")
 write(eqs_5_system, "rhs_5.txt")
+write(eqs_101_system, "rhs_101.txt")
+
 
