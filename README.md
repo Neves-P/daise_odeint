@@ -17,9 +17,9 @@ See a roadmap of the project [here](https://github.com/Neves-P/daisie_odeint/pro
 # References
 1. Valente, Luis M., Albert B. Phillimore, and Rampal S. Etienne. "Equilibrium and non‐equilibrium dynamics simultaneously operate in the Galápagos islands." Ecology letters 18.8 (2015): 844-852. [doi:10.1111/ele.12461](https://doi.org/10.1111/ele.12461)
 
-2. Soetaert, Karline, Thomas Petzoldt, and R Woodrow Setzer. 2010. “Solving Differential Equations in R : Package deSolve.” Journal of Statistical Software 33 (9): 1–25. [doi:10.18637/jss.v033.i09]()
+2. Soetaert, Karline, Thomas Petzoldt, and R Woodrow Setzer. 2010. "Solving Differential Equations in R : Package deSolve." Journal of Statistical Software 33 (9): 1–25. [doi:10.18637/jss.v033.i09](https://doi.org/10.18637/jss.v033.i09)
 
 3. Keitt, Timothy H. 2017. "odeintr: C++ ODE Solvers Compiled on-Demand. R package version 1.7.1." https://CRAN.R-project.org/package=odeintr
 
-4. Ahnert, Karsten, and Mario Mulansky. 2011. “Odeint – Solving Ordinary Differential Equations in C++.” In AIP Conference Proceedings, 1389:1586–89. American Institute of Physics. [doi:10.1063/1.3637934]()
+4. Ahnert, Karsten, and Mario Mulansky. 2011. "Odeint – Solving Ordinary Differential Equations in C++." In AIP Conference Proceedings, 1389:1586–89. American Institute of Physics. [doi:10.1063/1.3637934](https://doi.org/10.1063/1.3637934)
 
