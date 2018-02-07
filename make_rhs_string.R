@@ -27,6 +27,18 @@ lacvec = lac * rep(1,lnn)
 muvec = mu * rep(1,lnn)
 gamvec = gam * rep(1,lnn)
 
+# ddep = 1
+# 
+
+
+ 
+laavec = laa * rep(1,lnn)
+lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
+muvec = mu * rep(1,lnn)
+gamvec = gam * rep(1,lnn)
+
+#
+
 
 xx1 = c(0,0,x[1:lx],0)
 xx2 = c(0,0,x[(lx + 1):(2 * lx)],0)
@@ -341,7 +353,7 @@ compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 
 x <- c(1,0,0,0,0)
 probs_5_system <- x
-result_5_system <- y_5_system(x, 4, .10)
+result_5_system <- y_5_system(x, 4, .5)
 deSolve_5_system <- ode(probs_5_system,brts[1:2],DAISIE_loglik_rhs,c(pars1,k1,ddep),
     rtol = reltol,atol = abstol,method = methode)
 write.csv(result_5_system, "odeintr_5_system.csv")
@@ -350,7 +362,7 @@ write.csv(deSolve_5_system, "deSolve_5_system.csv")
 x <- rep(0, 101)
 x[1] <- 1
 probs_101_system <- x
-result_101_system <- y_101_system(x, 4, .10)
+result_101_system <- y_101_system(x, 4, .5)
 deSolve_101_system <- ode(probs_101_system,brts[1:2],DAISIE_loglik_rhs,c(pars1,k1,ddep),
                           rtol = reltol,atol = abstol,method = methode)
 write.csv(result_101_system, "odeintr_101_system.csv")
