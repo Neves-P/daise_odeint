@@ -1,4 +1,4 @@
-# Writen by Pedro Neves on 06/02/17, under the GPL-2 license.
+# Written by Pedro Neves on 06/02/17, under the GPL-2 license.
 # Code adapted from package DAISIE (Etienne, Valente, Phillimore & Haegeman), 
 # requires package odeintr (Keitt)
 
@@ -6,74 +6,112 @@ library(odeintr)
 library(DAISIE)
 library(beepr)
 
-#### Testing conditions
-lac = pars1[1]
-mu = pars1[2]
-K = pars1[3]
-gam = pars1[4]
-laa = pars1[5]
-kk = 0
-ddep = 0
-x <- c(1:11)
-lx = (length(x) - 1)/2
 
-nn = -2:(lx+2*kk+1)
-lnn = length(nn)          
-nn = pmax(rep(0,lnn),nn)
+prepare_odeintr <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
+                             laa = 1.01, kk = 0, ddep = 0, x){
+  # Parameter testing function #
+  
+  lac <- lac
+  mu <- mu
+  K <- K
+  gam <- gam
+  laa <- laa
+  kk <- kk
+  ddep <- ddep
+  x <- x
+  lx <- (length(x) - 1) / 2
+  
+  nn <- -2:(lx + 2 * kk + 1)
+  lnn <- length(nn)
+  nn <- pmax(rep(0, lnn), nn)
+  
+  if(ddep == 0){
+    laavec <- laa * rep(1, lnn)
+    lacvec <- lac * rep(1, lnn)
+    muvec <- mu * rep(1, lnn)
+    gamvec <- gam * rep(1, lnn)
+  }
+  if(ddep == 1){
+    
+  }
+  
+  
+  
+  laavec <- laa * rep(1,lnn)
+  lacvec <- pmax(rep(0,lnn),lac * (1 - nn/K))
+  muvec <- mu * rep(1,lnn)
+  gamvec <- gam * rep(1,lnn)
+  
+  #
+  
+  
+  xx1 <- c(0,0,x[1:lx],0)
+  xx2 <- c(0,0,x[(lx + 1):(2 * lx)],0)
+  xx3 <- x[2 * lx + 1]
+  
+  nil2lx <- 3:(lx + 2)
+  
+  il1 <- nil2lx+kk-1
+  il2 <- nil2lx+kk+1
+  il3 <- nil2lx+kk
+  il4 <- nil2lx+kk-2
+  
+  in1 <- nil2lx+2*kk-1
+  in2 <- nil2lx+1
+  in3 <- nil2lx+kk
+  
+  ix1 <- nil2lx-1
+  ix2 <- nil2lx+1
+  ix3 <- nil2lx
+  ix4 <- nil2lx-2
+  
+  # List of pars and indices
+  
+  list_pars <- list(laavec = laavec, lacvec = lacvec, 
+                    muvec = muvec, gamvec = gamvec,
+                    nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3, lx = lx)
+  list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
+                       in1 = in1, in2 = in2, in3 = in3,
+                       ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
 
-# ddep = 0
-laavec = laa * rep(1,lnn)
-lacvec = lac * rep(1,lnn)
-muvec = mu * rep(1,lnn)
-gamvec = gam * rep(1,lnn)
+  return(list(list_pars, list_indices))
+    
+}
 
-# ddep = 1
-# 
+compile_DAISIE <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
+                           laa = 1.01, kk = 0, ddep = 0, x){
+  # Compiles system from DAISIE in odeintr #
+  
+   x <- x
+  list_pars_indices <- prepare_odeintr(lac, mu, K, gam, laa, kk, ddep, x)
+  sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]])
+  eqs <- make_sys(sys)
+  
+  pars <- sys$pars[unique(names(sys$pars))]
+  
+  compile_sys(name = "y_odeintr", eqs, pars, 
+              sys_dim = length(sys$rhs), atol = abstol, rtol = reltol) 
+  beep(2)
+}
 
-
- 
-laavec = laa * rep(1,lnn)
-lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
-muvec = mu * rep(1,lnn)
-gamvec = gam * rep(1,lnn)
-
-#
-
-
-xx1 = c(0,0,x[1:lx],0)
-xx2 = c(0,0,x[(lx + 1):(2 * lx)],0)
-xx3 = x[2 * lx + 1]
-
-nil2lx = 3:(lx + 2)
-
-il1 = nil2lx+kk-1
-il2 = nil2lx+kk+1
-il3 = nil2lx+kk
-il4 = nil2lx+kk-2
-
-in1 = nil2lx+2*kk-1
-in2 = nil2lx+1
-in3 = nil2lx+kk
-
-ix1 = nil2lx-1
-ix2 = nil2lx+1
-ix3 = nil2lx
-ix4 = nil2lx-2
-
-# List of pars and indices
-
-list_pars <- list(laavec = laavec, lacvec = lacvec, 
-                  muvec = muvec, gamvec = gamvec,
-                  nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3)
-list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
-                     in1 = in1, in2 = in2, in3 = in3,
-                     ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
+integrate_DAISIE <- function(x, t = 4, timestep = 0.5){
+  # Integrates DAISIE sytem with odeintr and deSolve #
+  
+  brts <- c(-t, 0)
+  result_deSolve <- ode(x,
+                        brts[1:2], DAISIE_loglik_rhs, c(pars1,k1,ddep),
+                        rtol = reltol,atol = abstol,method = methode)
+  
+  result_odeintr <- y_odeintr(x, t, timestep)
+  
+  return(list(deSolve = result_deSolve, odeintr = result_odeintr))
+}
 
 ##### Function to get str of all rhs and pars ####
-make_rhs_1 <- function(list_pars, list_indices)
-{
+make_rhs_1 <- function(list_pars, list_indices){
   
   # Aux objects
+  lx <- list_pars$lx
   list_dx <- list()
   pars_list <- list()
   par_name_list <- list()
@@ -354,8 +392,9 @@ compile_sys(name = "y", sys$rhs, pars[unique(names(pars))])
 x <- c(1,0,0,0,0)
 probs_5_system <- x
 result_5_system <- y_5_system(x, 4, .5)
-deSolve_5_system <- ode(probs_5_system,brts[1:2],DAISIE_loglik_rhs,c(pars1,k1,ddep),
-    rtol = reltol,atol = abstol,method = methode)
+deSolve_5_system <- ode(probs_5_system,
+     brts[1:2], DAISIE_loglik_rhs, c(pars1,k1,ddep),
+                        rtol = reltol,atol = abstol,method = methode)
 write.csv(result_5_system, "odeintr_5_system.csv")
 write.csv(deSolve_5_system, "deSolve_5_system.csv")
 
@@ -375,5 +414,3 @@ write(y_101_system, "101_component_code.cpp")
 
 write(eqs_5_system, "rhs_5.txt")
 write(eqs_101_system, "rhs_101.txt")
-
-
