@@ -32,15 +32,16 @@ prepare_odeintr <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
     gamvec <- gam * rep(1, lnn)
   }
   if(ddep == 1){
-    
-  }
-  
-  
-  
+      
   laavec <- laa * rep(1,lnn)
   lacvec <- pmax(rep(0,lnn),lac * (1 - nn/K))
   muvec <- mu * rep(1,lnn)
   gamvec <- gam * rep(1,lnn)
+    
+  }
+  
+  
+
   
   #
   
