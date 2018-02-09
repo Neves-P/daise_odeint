@@ -8,63 +8,77 @@ library(beepr)
 
 
 prepare_odeintr <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
-                             laa = 1.01, kk = 0, ddep = 0, x){
+                            laa = 1.01, kk = 0, ddep = 0, x){
   # Parameter testing function #
   
-  lac <- lac
-  mu <- mu
-  K <- K
-  gam <- gam
-  laa <- laa
-  kk <- kk
-  ddep <- ddep
-  x <- x
-  lx <- (length(x) - 1) / 2
-  
-  nn <- -2:(lx + 2 * kk + 1)
-  lnn <- length(nn)
-  nn <- pmax(rep(0, lnn), nn)
-  
-  if(ddep == 0){
-    laavec <- laa * rep(1, lnn)
-    lacvec <- lac * rep(1, lnn)
-    muvec <- mu * rep(1, lnn)
-    gamvec <- gam * rep(1, lnn)
+  if(ddep == 0)
+  {
+    laavec = laa * rep(1,lnn)
+    lacvec = lac * rep(1,lnn)
+    muvec = mu * rep(1,lnn)
+    gamvec = gam * rep(1,lnn)
+  } else {
+    if(ddep == 1)
+    {
+      laavec = laa * rep(1,lnn)
+      lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
+      muvec = mu * rep(1,lnn)
+      gamvec = gam * rep(1,lnn)
+    } else {
+      if(ddep == 2)
+      {
+        laavec = laa * rep(1,lnn)
+        lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
+        muvec = mu * rep(1,lnn)
+        gamvec = gam * rep(1,lnn)
+      } else {
+        if(ddep == 11)
+        {
+          laavec = laa * rep(1,lnn)
+          lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
+          muvec = mu * rep(1,lnn)
+          gamvec = pmax(rep(0,lnn),gam * (1 - nn/K))
+        } else {
+          if(ddep == 21)
+          {
+            laavec = laa * rep(1,lnn)
+            lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
+            muvec = mu * rep(1,lnn)
+            gamvec = pmax(rep(0,lnn),gam * exp(-nn/K))
+          } else {
+            if(ddep == 3)
+            {
+              laavec = laa * rep(1,lnn)
+              lacvec = lac * rep(1,lnn)
+              muvec = mu * (1 + nn/K)
+              gamvec = gam * rep(1,lnn)
+            }
+          }
+        }
+      }
+    }
   }
-  if(ddep == 1){
-    
-  }
-  
-  
-  
-  laavec <- laa * rep(1,lnn)
-  lacvec <- pmax(rep(0,lnn),lac * (1 - nn/K))
-  muvec <- mu * rep(1,lnn)
-  gamvec <- gam * rep(1,lnn)
-  
-  #
-  
-  
-  xx1 <- c(0,0,x[1:lx],0)
-  xx2 <- c(0,0,x[(lx + 1):(2 * lx)],0)
+
+  xx1 <- c(0, 0,x[1:lx],0)
+  xx2 <- c(0, 0, x[(lx + 1):(2 * lx)], 0)
   xx3 <- x[2 * lx + 1]
-  
+
   nil2lx <- 3:(lx + 2)
+
+  il1 <- nil2lx + kk - 1
+  il2 <- nil2lx + kk + 1
+  il3 <- nil2lx + kk
+  il4 <- nil2lx + kk - 2
+
+  in1 <- nil2lx + 2 * kk - 1
+  in2 <- nil2lx + 1
+  in3 <- nil2lx + kk
   
-  il1 <- nil2lx+kk-1
-  il2 <- nil2lx+kk+1
-  il3 <- nil2lx+kk
-  il4 <- nil2lx+kk-2
-  
-  in1 <- nil2lx+2*kk-1
-  in2 <- nil2lx+1
-  in3 <- nil2lx+kk
-  
-  ix1 <- nil2lx-1
-  ix2 <- nil2lx+1
+  ix1 <- nil2lx - 1
+  ix2 <- nil2lx + 1
   ix3 <- nil2lx
-  ix4 <- nil2lx-2
-  
+  ix4 <- nil2lx - 2
+
   # List of pars and indices
   
   list_pars <- list(laavec = laavec, lacvec = lacvec, 
@@ -115,8 +129,6 @@ make_rhs_1 <- function(list_pars, list_indices){
   list_dx <- list()
   pars_list <- list()
   par_name_list <- list()
-  init_state_list <- list()
-  init_state_list_names <-list()
   dx_list_counter <- 1
   dx_list_counter_increase <- 0
   x_counter <- 0
@@ -294,7 +306,8 @@ make_rhs_1 <- function(list_pars, list_indices){
     temp_laavec_il3_plusone <- paste("laavec_il3_plusone", i, sep = "_")
     assign(temp_laavec_il3_plusone, list_pars$laavec[list_indices$il3 + 1][i])
     
-    prod5 <- paste0(" (-1.0 * (", paste(temp_laavec_il3_plusone, temp_xx2_ix3, sep = " * "), "))")
+    prod5 <- paste0(" (-1.0 * (", paste(temp_laavec_il3_plusone,
+                                        temp_xx2_ix3, sep = " * "), "))")
     
     # dx2 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, sep = " + ")
@@ -302,7 +315,7 @@ make_rhs_1 <- function(list_pars, list_indices){
 
     
     #### dx3 ####
-    if(i == length(list_pars$laavec[list_indices$il1])){
+    if (i == length(list_pars$laavec[list_indices$il1])){
       
       # Negative term
       temp_laavec_il3_one <- "laavec_il3_one"
@@ -351,10 +364,9 @@ make_rhs_1 <- function(list_pars, list_indices){
 }
 
 
-make_sys <- function(rhs)
-{
+make_sys <- function(rhs){
   ode_system <- list()
-  for(i in 1:length(rhs$rhs)){
+  for (i in 1:length(rhs$rhs)){
     ode_system[[i]] <- (paste0("dxdt[", i - 1, "] = ", rhs$rhs[[i]], "; "))
   }
   
