@@ -10,6 +10,19 @@ library(beepr)
 prepare_odeintr <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
                             laa = 1.01, kk = 0, ddep = 0, x){
   # Parameter testing function #
+  lac <- lac
+  mu <- mu
+  K <- K
+  gam <- gam
+  laa <- laa
+  kk <- kk
+  ddep <- ddep
+  x <- x
+  lx <- (length(x) - 1) / 2
+  
+  nn <- -2:(lx + 2 * kk + 1)
+  lnn <- length(nn)
+  nn <- pmax(rep(0, lnn), nn)
   
   if(ddep == 0)
   {
@@ -59,8 +72,10 @@ prepare_odeintr <- function(lac = 2.5, mu = 2.7, K = Inf, gam = 0.009,
     }
   }
 
-  xx1 <- c(0, 0,x[1:lx],0)
-  xx2 <- c(0, 0, x[(lx + 1):(2 * lx)], 0)
+  
+  
+  xx1 <- c(0,0,x[1:lx],0)
+  xx2 <- c(0,0,x[(lx + 1):(2 * lx)],0)
   xx3 <- x[2 * lx + 1]
 
   nil2lx <- 3:(lx + 2)
