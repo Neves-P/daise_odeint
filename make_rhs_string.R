@@ -118,7 +118,7 @@ compile_DAISIE <- function(pars, x){
   pars <- sys$pars[unique(names(sys$pars))]
   
   compile_sys(name = "y_odeintr", eqs, pars, 
-              sys_dim = length(sys$rhs), atol = abstol, rtol = reltol) 
+              sys_dim = length(sys$rhs), atol = 1e-6, rtol = 1e-6) 
   beep(2)
 }
 
@@ -127,10 +127,9 @@ integrate_DAISIE <- function(x, pars, t = 4, timestep = 0.5){
   brts <- c(-t, 0)
   result_deSolve <- ode(x,
                         brts[1:2], DAISIE_loglik_rhs, pars,
-                        rtol = reltol,atol = abstol,method = methode)
+                        rtol = 1e-10,atol = 1e-16,method = "lsodes")
   
   result_odeintr <- y_odeintr(x, t, timestep)
-  
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
@@ -194,7 +193,7 @@ make_rhs_1 <- function(list_pars, list_indices){
     
     if(i > 2 ){ # n - 2 falls out of boundary
       temp_xx2_ix4 <- paste0("x[", x_counter_2 - 2, "]")
-      assign(temp_xx2_ix4, list_pars$xx2[ix4][i])
+      assign(temp_xx2_ix4, list_pars$xx2[list_indices$ix4][i])
     }else{
       temp_xx2_ix4 <- "0.0"
     }
@@ -212,7 +211,7 @@ make_rhs_1 <- function(list_pars, list_indices){
     
     # Second product
     temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
-    assign(temp_lacvec_il4_plusone, list_pars$lacvec[il4 + 1][i])
+    assign(temp_lacvec_il4_plusone, list_pars$lacvec[list_indices$il4 + 1][i])
     
     prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
     
@@ -452,18 +451,40 @@ for (i in 5:506){
   probs_test_list[[i - 4]][1] <- 1
 }
 
+odd_numbers <-  seq(1, 506, by = 2)
+odd_probs <- probs_test_list[odd_numbers]
+
 params_test_list <- list()
-for (i in 1:500){
+for (i in 1:253){
   params_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
                              mu = abs(rnorm(1, 2.7, 1)),
                              K = Inf, gam = abs(rnorm(1, 0.009, 0.05)),
                              laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = 0)
 }
 
-compile_DAISIE(params_test_list[[3]], x = probs_test_list[[3]])
-integrate_DAISIE(probs_test_list[[1]], params_test_list[[1]], 4, 0.5)
 result_list <- list()
-for (i in 1:3){
-  compile_DAISIE(params_test_list[[i]], x = probs_test_list[[i]])
-  result_list[i] <- integrate_DAISIE(x = probs_test_list[[i]], pars = params_test_list[[i]], t = 4, timestep = 0.5)
+for (i in 1:10){
+  cat(paste0("Integrating function ", i, "...",  "\n"))
+  compile_DAISIE(params_test_list[[i]], x = odd_probs[[i]])
+  result_list[[i]] <- integrate_DAISIE(x = odd_probs[[i]],
+                                       pars = params_test_list[[i]],
+                                       t = 4, timestep = 0.5)
+  Sys.sleep(0.5)
 }
+library(microbenchmark)
+
+
+deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
+  return(ode(x,
+             brts[1:2], DAISIE_loglik_rhs, pars,
+             rtol = 1e-10,atol = 1e-16,method = "lsodes"))
+}
+
+odeintr_calc <- function(x, t, timestep){
+  y_odeintr(x, t, timestep)
+}
+
+deSolve_calc(odd_probs[[3]], params_test_list[[3]], brts = c(-4,0))
+microbenchmark(NULL, deSolve_calc, times = 1000L)
+microbenchmark(NULL, y_odeintr(odd_probs[[3]], 4, 0.5))
+               
