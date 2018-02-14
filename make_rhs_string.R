@@ -487,4 +487,3 @@ odeintr_calc <- function(x, t, timestep){
 deSolve_calc(odd_probs[[3]], params_test_list[[3]], brts = c(-4,0))
 microbenchmark(NULL, deSolve_calc, times = 1000L)
 microbenchmark(NULL, y_odeintr(odd_probs[[3]], 4, 0.5))
-               
