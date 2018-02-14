@@ -127,7 +127,7 @@ integrate_DAISIE <- function(x, pars, t = 4, timestep = 0.5){
   brts <- c(-t, 0)
   result_deSolve <- ode(x,
                         brts[1:2], DAISIE_loglik_rhs, pars,
-                        rtol = 1e-10,atol = 1e-16,method = "lsodes")
+                        rtol = 1e-6,atol = 1e-6,method = "lsodes")
   
   result_odeintr <- y_odeintr(x, t, timestep)
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
@@ -387,61 +387,6 @@ make_sys <- function(rhs){
 
 
 #### Run code ####
-
-
-sys_5_system <- make_rhs_1(list_pars, list_indices)
-eqs_5_system <- make_sys(sys_5_system)
-
-sys_101_system <- make_rhs_1(list_pars, list_indices)
-eqs_101_system <- make_sys(sys_101_system)
-
-pars_5_system <- sys_5_system$pars
-pars_5_system <- pars_5_system[unique(names(pars_5_system))]
-
-pars_101_system <- sys_101_system$pars
-pars_101_system <- pars_101_system[unique(names(pars_101_system))]
-
-
-y_5_system <- compile_sys(name = "y_5_system", eqs_5_system, pars_5_system, 
-                          sys_dim = 5, atol = abstol, rtol = reltol) 
-beep(sound = 2)
-
-
-y_101_system <- compile_sys(name = "y_101_system", eqs_101_system, pars_101_system,
-                            sys_dim = 101, atol = abstol, rtol = reltol) 
-beep(sound = 2)
-
-compile_sys(name = "y", eqs, pars, sys_dim = 7)
-
-x <- c(1,0,0,0,0)
-probs_5_system <- x
-result_5_system <- y_5_system(x, 4, .5)
-deSolve_5_system <- ode(probs_5_system,
-     brts[1:2], DAISIE_loglik_rhs, c(pars1,k1,ddep),
-                        rtol = reltol,atol = abstol,method = methode)
-write.csv(result_5_system, "odeintr_5_system.csv")
-write.csv(deSolve_5_system, "deSolve_5_system.csv")
-
-x <- rep(0, 101)
-x[1] <- 1
-probs_101_system <- x
-result_101_system <- y_101_system(x, 4, .5)
-deSolve_101_system <- ode(probs_101_system,brts[1:2],DAISIE_loglik_rhs,c(pars1,k1,ddep),
-                          rtol = reltol,atol = abstol,method = methode)
-write.csv(result_101_system, "odeintr_101_system.csv")
-write.csv(deSolve_101_system, "desolve_101_system.csv")
-
-
-
-write(y_5_system, "5_component_code.cpp")
-write(y_101_system, "101_component_code.cpp")
-
-write(eqs_5_system, "rhs_5.txt")
-write(eqs_101_system, "rhs_101.txt")
-
-
-
-
 
 # Parameter testing
 
