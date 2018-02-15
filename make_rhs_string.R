@@ -19,52 +19,52 @@ prepare_odeintr <- function(pars, x){
   ddep <- pars[7]
   x <- x
   lx <- (length(x) - 1) / 2
-  
+
   nn <- -2:(lx + 2 * kk + 1)
   lnn <- length(nn)
   nn <- pmax(rep(0, lnn), nn)
 
-  if(ddep == 0)
+  if (ddep == 0)
   {
-    laavec = laa * rep(1,lnn)
-    lacvec = lac * rep(1,lnn)
-    muvec = mu * rep(1,lnn)
-    gamvec = gam * rep(1,lnn)
+    laavec = laa * rep(1, lnn)
+    lacvec = lac * rep(1, lnn)
+    muvec = mu * rep(1, lnn)
+    gamvec = gam * rep(1, lnn)
   } else {
-    if(ddep == 1)
+    if (ddep == 1)
     {
-      laavec = laa * rep(1,lnn)
-      lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
-      muvec = mu * rep(1,lnn)
-      gamvec = gam * rep(1,lnn)
+      laavec = laa * rep(1, lnn)
+      lacvec = pmax(rep(0, lnn),lac * (1 - nn / K))
+      muvec = mu * rep(1, lnn)
+      gamvec = gam * rep(1, lnn)
     } else {
-      if(ddep == 2)
+      if (ddep == 2)
       {
-        laavec = laa * rep(1,lnn)
-        lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
-        muvec = mu * rep(1,lnn)
-        gamvec = gam * rep(1,lnn)
+        laavec = laa * rep(1, lnn)
+        lacvec = pmax(rep(0, lnn),lac * exp(-nn / K))
+        muvec = mu * rep(1, lnn)
+        gamvec = gam * rep(1, lnn)
       } else {
-        if(ddep == 11)
+        if (ddep == 11)
         {
-          laavec = laa * rep(1,lnn)
-          lacvec = pmax(rep(0,lnn),lac * (1 - nn/K))
-          muvec = mu * rep(1,lnn)
-          gamvec = pmax(rep(0,lnn),gam * (1 - nn/K))
+          laavec = laa * rep(1 , lnn)
+          lacvec = pmax(rep(0 , lnn), lac * (1 - nn / K))
+          muvec = mu * rep(1, lnn)
+          gamvec = pmax(rep(0, lnn), gam * (1 - nn / K))
         } else {
-          if(ddep == 21)
+          if (ddep == 21)
           {
-            laavec = laa * rep(1,lnn)
-            lacvec = pmax(rep(0,lnn),lac * exp(-nn/K))
-            muvec = mu * rep(1,lnn)
-            gamvec = pmax(rep(0,lnn),gam * exp(-nn/K))
+            laavec = laa * rep(1, lnn)
+            lacvec = pmax(rep(0, lnn), lac * exp(-nn / K))
+            muvec = mu * rep(1, lnn)
+            gamvec = pmax(rep(0, lnn), gam * exp(-nn / K))
           } else {
-            if(ddep == 3)
+            if (ddep == 3)
             {
-              laavec = laa * rep(1,lnn)
-              lacvec = lac * rep(1,lnn)
-              muvec = mu * (1 + nn/K)
-              gamvec = gam * rep(1,lnn)
+              laavec = laa * rep(1, lnn)
+              lacvec = lac * rep(1, lnn)
+              muvec = mu * (1 + nn / K)
+              gamvec = gam * rep(1, lnn)
             }
           }
         }
@@ -74,8 +74,8 @@ prepare_odeintr <- function(pars, x){
 
 
 
-  xx1 <- c(0,0,x[1:lx],0)
-  xx2 <- c(0,0,x[(lx + 1):(2 * lx)],0)
+  xx1 <- c(0, 0, x[1:lx],0)
+  xx2 <- c(0, 0, x[(lx + 1):(2 * lx)], 0)
   xx3 <- x[2 * lx + 1]
 
   nil2lx <- 3:(lx + 2)
@@ -88,15 +88,15 @@ prepare_odeintr <- function(pars, x){
   in1 <- nil2lx + 2 * kk - 1
   in2 <- nil2lx + 1
   in3 <- nil2lx + kk
-  
+
   ix1 <- nil2lx - 1
   ix2 <- nil2lx + 1
   ix3 <- nil2lx
   ix4 <- nil2lx - 2
 
   # List of pars and indices
-  
-  list_pars <- list(laavec = laavec, lacvec = lacvec, 
+
+  list_pars <- list(laavec = laavec, lacvec = lacvec,
                     muvec = muvec, gamvec = gamvec,
                     nn = nn, xx1 = xx1, xx2 = xx2, xx3 = xx3, lx = lx)
   list_indices <- list(il1 = il1, il2 = il2, il3 = il3, il4 = il4,
@@ -104,38 +104,41 @@ prepare_odeintr <- function(pars, x){
                        ix1 = ix1, ix2 = ix2, ix3 = ix3, ix4 = ix4)
 
   return(list(list_pars, list_indices))
-    
 }
 
 compile_DAISIE <- function(pars, x){
   # Compiles system from DAISIE in odeintr #
-  
+  require(beepr)
+  require(deSolve)
+  require(DAISIE)
+  require(odeintr)
+
   x <- x
   list_pars_indices <- prepare_odeintr(pars, x)
   sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]])
   eqs <- make_sys(sys)
-  
+
   pars <- sys$pars[unique(names(sys$pars))]
-  
+
   compile_sys(name = "y_odeintr", eqs, pars, 
               sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10) 
   beep(2)
 }
 
-integrate_DAISIE <- function(x, pars, t = 4, timestep = 0.5){
+integrate_daisie <- function(x, pars, t = 4, timestep = 0.5){
   # Integrates DAISIE sytem with odeintr and deSolve #
   brts <- c(-t, 0)
   result_deSolve <- ode(x,
                         brts[1:2], DAISIE_loglik_rhs, pars,
                         rtol = 1e-10,atol = 1e-10,method = "lsodes")
-  
+
   result_odeintr <- y_odeintr(x, t, timestep)
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
 ##### Function to get str of all rhs and pars ####
 make_rhs_1 <- function(list_pars, list_indices){
-  
+
   # Aux objects
   lx <- list_pars$lx
   list_dx <- list()
@@ -145,9 +148,9 @@ make_rhs_1 <- function(list_pars, list_indices){
   dx_list_counter_increase <- 0
   x_counter <- 0
   x_counter_2 <- lx
-  
-  
-  for(i in 1:length(list_pars$laavec[list_indices$il1])){
+
+
+  for (i in 1:length(list_pars$laavec[list_indices$il1])){
     
     # Generate X first
     
@@ -197,106 +200,110 @@ make_rhs_1 <- function(list_pars, list_indices){
     }else{
       temp_xx2_ix4 <- "0.0"
     }
-    
-    
+
+
     #### dx1 ####
-    
+
     # First product
     temp_laavec_il1_plusone <- paste("laavec_il1_plusone", i, sep = "_")
     assign(temp_laavec_il1_plusone, list_pars$laavec[list_indices$il1 + 1][i])
-    
-    
-    prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1 , sep = " * ")
-    
-    
+
+
+    prod1 <- paste(temp_laavec_il1_plusone, temp_xx2_ix1, sep = " * ")
+
+
     # Second product
     temp_lacvec_il4_plusone <- paste("lacvec_il4_plusone", i, sep = "_")
     assign(temp_lacvec_il4_plusone, list_pars$lacvec[list_indices$il4 + 1][i])
-    
+
     prod2 <- paste(temp_lacvec_il4_plusone, temp_xx2_ix4, sep = " * ")
-    
-    
+
+
     # Third product
     temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
     assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
-    
+
     prod3 <- paste(temp_muvec_il2_plusone, temp_xx2_ix3, sep = " * ")
-    
+
     # Fourth product
     temp_lacvec_il1 <- paste("lacvec_il1", i, sep = "_")
     assign(temp_lacvec_il1, list_pars$lacvec[list_indices$il1][i])
-    
+
     temp_nn_in1 <- paste("nn_in1", i, sep = "_")
     assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
-    
+
     prod4 <- paste(temp_lacvec_il1, temp_nn_in1, temp_xx1_ix1, sep = " * ")
-    
-    
+
+
     # Fifth product
     temp_muvec_il2 <- paste("muvec_il2", i, sep = "_")
     assign(temp_muvec_il2, list_pars$muvec[list_indices$il2][i])
-    
+
     temp_nn_in2 <- paste("nn_in2", i, sep = "_")
     assign(temp_nn_in2, list_pars$nn[list_indices$in2][i])
-    
+
     prod5 <- paste(temp_muvec_il2, temp_nn_in2, temp_xx1_ix2, sep = " * ")
-    
+
     # Negative term
     temp_muvec_il3 <- paste("muvec_il3", i, sep= "_")
     assign(temp_muvec_il3, list_pars$muvec[list_indices$il3][i])
-    
+
     temp_lacvec_il3 <- paste("lacvec_il3", i, sep = "_")
     assign(temp_lacvec_il3, list_pars$lacvec[list_indices$il3][i])
-    
+
     neg_term1 <- paste("(-1.0) * (", paste(temp_muvec_il3, temp_lacvec_il3, 
                                            sep = " + "), ")", sep = "")
-    
-    
+
+
     # Sixth product
     temp_nn_in3 <- paste("nn_in3", i, sep = "_")
     assign(temp_nn_in3, list_pars$nn[list_indices$in3][i])
-    
+
     prod6 <- paste(neg_term1, temp_nn_in3, temp_xx1_ix3, sep = " * ")
-    
+
     # Seventh product
     # This gamvec is assign the regular (non negative) value of gam
     # The string is built with a negative sign for correct input in odeintr
     temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
-    
-    prod7 <- paste(paste0("(-1.0) * " , temp_neggamvec_il3), temp_xx1_ix3, sep = " * ")
-    
-    
+
+    prod7 <- paste(paste0("(-1.0) * ", temp_neggamvec_il3),
+                   temp_xx1_ix3, sep = " * ")
+
+
     # dx1 rhs of equation
-    complete_rhs <- paste(prod1, prod2, prod3, prod4, prod5, prod6, prod7, sep = " + ")
+    complete_rhs <- paste(prod1, prod2, prod3, prod4,
+                          prod5, prod6, prod7, sep = " + ")
     list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
-    
-    
+
+
     #### dx2 ####
-    
+
     # First product
     temp_gamvec_il3 <- paste("gamvec_il3", i, sep = "_")
     assign(temp_gamvec_il3, list_pars$gamvec[list_indices$il3][i])
-    
+
     prod1 <- paste(temp_gamvec_il3, temp_xx1_ix3, sep = " * ")
-    
+
     # Second product
     temp_lacvec_il1_plusone <- paste("lacvec_il1_plusone", i, sep = "_")
     assign(temp_lacvec_il1_plusone, list_pars$lacvec[list_indices$il1 + 1][i])
-    
+
     temp_nn_in1 <- paste("nn_in1", i, sep = "_")
     assign(temp_nn_in1, list_pars$nn[list_indices$in1][i])
-    
-    prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1, temp_xx2_ix1, sep = " * ")
-    
+
+    prod2 <- paste(temp_lacvec_il1_plusone, temp_nn_in1,
+                   temp_xx2_ix1, sep = " * ")
+
     # Third product
     temp_muvec_il2_plusone <- paste("muvec_il2_plusone", i, sep = "_")
     assign(temp_muvec_il2_plusone, list_pars$muvec[list_indices$il2 + 1][i])
-    
+
     temp_nn2_in2 <- paste("nn_in2", i, sep = "_")
     assign(temp_nn2_in2, list_pars$nn[list_indices$in2][i])
     
-    prod3 <- paste(temp_muvec_il2_plusone, temp_nn_in2, temp_xx2_ix2, sep = " * ")
+    prod3 <- paste(temp_muvec_il2_plusone,
+                   temp_nn_in2, temp_xx2_ix2, sep = " * ")
     
     # Negative term
     temp_muvec_il3_plusone <- paste("muvec_il3_plusone", i, sep= "_")
@@ -305,7 +312,8 @@ make_rhs_1 <- function(list_pars, list_indices){
     temp_lacvec_il3_plusone <- paste("lacvec_il3_plusone", i, sep = "_")
     assign(temp_lacvec_il3_plusone, list_pars$lacvec[list_indices$il3 + 1][i])
     
-    neg_term1 <- paste("-(", paste(temp_muvec_il3_plusone, temp_lacvec_il3_plusone, 
+    neg_term1 <- paste("-(", paste(temp_muvec_il3_plusone, 
+                                   temp_lacvec_il3_plusone, 
                                    sep = " + "), ")", sep = "")
     
     # Fourth product
@@ -390,6 +398,58 @@ make_sys <- function(rhs){
 
 # Parameter testing
 
+make_prob_test_list <- function(size) {
+  
+  probs_test_list <- list()
+  for (i in 5:size){
+    probs_test_list[[i - 4]] <- rep(0, i)
+    probs_test_list[[i - 4]][1] <- 1
+  }
+  odd_int_positions <-  seq(1, size, by = 2)
+  odd_probs <- probs_test_list[odd_int_positions]
+  return(odd_probs)
+}
+
+
+make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
+  
+  pars_test_list <- list()
+  for (i in 1:10){
+    pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
+                             mu = abs(rnorm(1, 2.7, 1)),
+                             K, gam = abs(rnorm(1, 0.009, 0.05)),
+                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep)
+  }
+  return(pars_test_list)
+}
+
+run_integrator_test <- function(probs, pars, nruns) {
+  
+  result_list <- list()
+  for (i in 1:10){
+    cat(paste0("Integrating function ", i, "...",  "\n"))
+    compile_DAISIE(pars[[i]], x = probs[[i]])
+    result_list[[i]] <- integrate_daisie(x = probs[[i]],
+                                         pars = pars[[i]],
+                                         t = 4, timestep = 1)
+    Sys.sleep(0.5)
+  }
+  return(result_list)
+}
+
+
+
+# Calculates difference between deSolve and odeintr last equation
+calculate_error <- function(result_list) {
+  diff <- c()
+  for (i in 1:10){
+    diff <- append(diff, result_list[[i]]$deSolve[length(result_list[[i]]$deSolve) - 2] -
+                     result_list[[i]]$odeintr[5,length(result_list[[i]]$odeintr) - 1])
+  }
+  return(diff)
+}
+
+
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
@@ -409,64 +469,12 @@ test_integrators <- function(size = 10, ddep = 0, kk = 0, nruns) {
 }
 
 
-make_prob_test_list <- function(size) {
-  
-  probs_test_list <- list()
-  for (i in 5:size){
-    probs_test_list[[i - 4]] <- rep(0, i)
-    probs_test_list[[i - 4]][1] <- 1
-  }
-  odd_int_positions <-  seq(1, size, by = 2)
-  odd_probs <- probs_test_list[odd_int_positions]
-  return(odd_probs)
-}
-
-
-make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
-  
-  pars_test_list <- list()
-  for (i in 1:10){
-    pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
-                               mu = abs(rnorm(1, 2.7, 1)),
-                               K, gam = abs(rnorm(1, 0.009, 0.05)),
-                               laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep)
-  }
-  return(pars_test_list)
-}
-
-run_integrator_test <- function(probs, pars, nruns) {
-  
-  result_list <- list()
-  for (i in 1:10){
-    cat(paste0("Integrating function ", i, "...",  "\n"))
-    compile_DAISIE(pars[[i]], x = probs[[i]])
-    result_list[[i]] <- integrate_DAISIE(x = probs[[i]],
-                                         pars = pars[[i]],
-                                         t = 4, timestep = 1)
-    Sys.sleep(0.5)
-  }
-  return(result_list)
-}
-
-
-
-# Calculates difference between deSolve and odeintr last equation
-calculate_error <- function(result_list) {
-    diff <- c()
-    for (i in 1:10){
-    diff <- append(diff, result_list[[i]]$deSolve[length(result_list[[i]]$deSolve) - 2] -
-                     result_list[[i]]$odeintr[5,length(result_list[[i]]$odeintr) - 1])
-  }
-  return(diff)
-}
-
-
 #### Benchmarking ####
 
 deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
   return(ode(x,
              brts[1:2], DAISIE_loglik_rhs, pars,
-             rtol = 1e-10,atol = 1e-16,method = "lsodes"))
+             rtol = 1e-10, atol = 1e-16, method = "lsodes"))
 }
 
 odeintr_calc <- function(x, t, timestep){
