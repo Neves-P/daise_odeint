@@ -404,7 +404,7 @@ for (i in 1:10){
   params_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
                              mu = abs(rnorm(1, 2.7, 1)),
                              K = Inf, gam = abs(rnorm(1, 0.009, 0.05)),
-                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = 1)
+                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = 0)
 }
 
 result_list <- list()
@@ -417,6 +417,15 @@ for (i in 1:10){
   Sys.sleep(0.5)
 }
 
+# Calculates difference between deSolve and odeintr last equation
+calculate_error <- function(result_list) {
+    diff <- c()
+    for (i in 1:10){
+    diff <- append(diff, result_list[[i]]$deSolve[length(result_list[[i]]$deSolve) - 2] -
+                     result_list[[i]]$odeintr[5,length(result_list[[i]]$odeintr) - 1])
+  }
+  return(diff)
+}
 
 deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
   return(ode(x,
