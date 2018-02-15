@@ -398,6 +398,9 @@ make_sys <- function(rhs){
 
 # Parameter testing
 
+
+# Generates list of increasingly large probability vectors
+# Only keeps vectors of odd size
 make_prob_test_list <- function(size) {
   
   probs_test_list <- list()
@@ -410,7 +413,8 @@ make_prob_test_list <- function(size) {
   return(odd_probs)
 }
 
-
+# Generates list of parameter vectors based on sampling from a normal 
+# distribution
 make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
   
   pars_test_list <- list()
@@ -423,6 +427,7 @@ make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
   return(pars_test_list)
 }
 
+# Compiles odeintr integrator and integrates system with odeintr and deSolve
 run_integrator_test <- function(probs, pars, nruns) {
   
   result_list <- list()
@@ -448,7 +453,6 @@ calculate_error <- function(result_list) {
   }
   return(diff)
 }
-
 
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
