@@ -383,7 +383,7 @@ make_rhs_1 <- function(list_pars, list_indices){
   return(list(rhs = list_dx, pars = unlist(pars_list)))
 }
 
-
+# Appends lhs of equation and ; to system for odeintr to interpret
 make_sys <- function(rhs){
   ode_system <- list()
   for (i in 1:length(rhs$rhs)){
@@ -398,6 +398,9 @@ make_sys <- function(rhs){
 
 # Parameter testing
 
+
+# Generates list of increasingly large probability vectors
+# Only keeps vectors of odd size
 make_prob_test_list <- function(size) {
   
   probs_test_list <- list()
@@ -410,7 +413,8 @@ make_prob_test_list <- function(size) {
   return(odd_probs)
 }
 
-
+# Generates list of parameter vectors based on sampling from a normal 
+# distribution
 make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
   
   pars_test_list <- list()
@@ -423,6 +427,7 @@ make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
   return(pars_test_list)
 }
 
+# Compiles odeintr integrator and integrates system with odeintr and deSolve
 run_integrator_test <- function(probs, pars, nruns) {
   
   result_list <- list()
@@ -449,11 +454,9 @@ calculate_error <- function(result_list) {
   return(diff)
 }
 
-
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
-
 test_integrators <- function(size = 10, ddep = 0, kk = 0, nruns) {
   
   require(DAISIE)
