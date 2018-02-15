@@ -390,32 +390,65 @@ make_sys <- function(rhs){
 
 # Parameter testing
 
-probs_test_list <- list()
-for (i in 5:506){
-  probs_test_list[[i - 4]] <- rep(0, i)
-  probs_test_list[[i - 4]][1] <- 1
+# Compiles and integrates two systems with random parameters and specified size
+# Returns results of integration and difference between second to last components
+# of system
+
+test_integrators <- function(size = 10, ddep = 0, kk = 0, nruns) {
+  
+  require(DAISIE)
+  require(deSolve)
+  require(odeintr)
+  require(beepr)
+  
+  probs <- make_prob_test_list(size)
+  pars <- make_pars_test_list(size, ddep, kk)
+  results <- run_integrator_test(probs, pars, nruns)
+  diff <- calculate_error(results)
+  return(list(result_list, diff))
 }
 
-odd_numbers <-  seq(1, 506, by = 2)
-odd_probs <- probs_test_list[odd_numbers]
 
-params_test_list <- list()
-for (i in 1:10){
-  params_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
-                             mu = abs(rnorm(1, 2.7, 1)),
-                             K = Inf, gam = abs(rnorm(1, 0.009, 0.05)),
-                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = 0)
+make_prob_test_list <- function(size) {
+  
+  probs_test_list <- list()
+  for (i in 5:size){
+    probs_test_list[[i - 4]] <- rep(0, i)
+    probs_test_list[[i - 4]][1] <- 1
+  }
+  odd_int_positions <-  seq(1, size, by = 2)
+  odd_probs <- probs_test_list[odd_int_positions]
+  return(odd_probs)
 }
 
-result_list <- list()
-for (i in 1:10){
-  cat(paste0("Integrating function ", i, "...",  "\n"))
-  compile_DAISIE(params_test_list[[i]], x = odd_probs[[i]])
-  result_list[[i]] <- integrate_DAISIE(x = odd_probs[[i]],
-                                       pars = params_test_list[[i]],
-                                       t = 4, timestep = 1)
-  Sys.sleep(0.5)
+
+make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
+  
+  pars_test_list <- list()
+  for (i in 1:10){
+    pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
+                               mu = abs(rnorm(1, 2.7, 1)),
+                               K, gam = abs(rnorm(1, 0.009, 0.05)),
+                               laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep)
+  }
+  return(pars_test_list)
 }
+
+run_integrator_test <- function(probs, pars, nruns) {
+  
+  result_list <- list()
+  for (i in 1:10){
+    cat(paste0("Integrating function ", i, "...",  "\n"))
+    compile_DAISIE(pars[[i]], x = probs[[i]])
+    result_list[[i]] <- integrate_DAISIE(x = probs[[i]],
+                                         pars = pars[[i]],
+                                         t = 4, timestep = 1)
+    Sys.sleep(0.5)
+  }
+  return(result_list)
+}
+
+
 
 # Calculates difference between deSolve and odeintr last equation
 calculate_error <- function(result_list) {
@@ -426,6 +459,9 @@ calculate_error <- function(result_list) {
   }
   return(diff)
 }
+
+
+#### Benchmarking ####
 
 deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
   return(ode(x,
