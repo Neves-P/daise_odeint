@@ -401,28 +401,32 @@ make_sys <- function(rhs){
 
 # Generates list of increasingly large probability vectors
 # Only keeps vectors of odd size
-make_prob_test_list <- function(size) {
+make_prob_test_list <- function(nruns, end_size){
   
+  odd_probs <- list()
   probs_test_list <- list()
-  for (i in 5:size){
-    probs_test_list[[i - 4]] <- rep(0, i)
-    probs_test_list[[i - 4]][1] <- 1
+  for(i in 1:nruns){
+    for(j in 5:end_size){
+      
+      probs_test <- rep(0, j)
+      probs_test[1] <- 1
+      
+      odd_int_positions <-  seq(1, j * 2, by = 2)
+    }
+    odd_probs[[i]] <- probs_test[odd_int_positions]
   }
-  odd_int_positions <-  seq(1, size, by = 2)
-  odd_probs <- probs_test_list[odd_int_positions]
   return(odd_probs)
 }
-
 # Generates list of parameter vectors based on sampling from a normal 
 # distribution
-make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
+make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0) {
   
   pars_test_list <- list()
-  for (i in 1:10){
+  for (i in 1:nruns){
     pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
                              mu = abs(rnorm(1, 2.7, 1)),
-                             K, gam = abs(rnorm(1, 0.009, 0.05)),
-                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep)
+                             K = K, gam = abs(rnorm(1, 0.009, 0.05)),
+                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = ddep)
   }
   return(pars_test_list)
 }
@@ -431,12 +435,12 @@ make_pars_test_list <- function(size, K = Inf, ddep = 0, kk = 0) {
 run_integrator_test <- function(probs, pars, nruns) {
   
   result_list <- list()
-  for (i in 1:10){
+  for (i in 1:nruns){
     cat(paste0("Integrating function ", i, "...",  "\n"))
     compile_DAISIE(pars[[i]], x = probs[[i]])
     result_list[[i]] <- integrate_daisie(x = probs[[i]],
                                          pars = pars[[i]],
-                                         t = 4, timestep = 1)
+                                         t = 4, timestep = 0.1)
     Sys.sleep(0.5)
   }
   return(result_list)
@@ -465,10 +469,10 @@ test_integrators <- function(size = 10, ddep = 0, kk = 0, nruns) {
   require(beepr)
   
   probs <- make_prob_test_list(size)
-  pars <- make_pars_test_list(size, ddep, kk)
-  results <- run_integrator_test(probs, pars, nruns)
-  diff <- calculate_error(results)
-  return(list(result_list, diff))
+  test_pars <- make_pars_test_list(size, ddep, kk)
+  results <- run_integrator_test(probs, test_pars, nruns)
+  #diff <- calculate_error(results)
+  return(list(result_list))
 }
 
 
