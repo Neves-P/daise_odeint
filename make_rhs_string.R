@@ -401,22 +401,25 @@ make_sys <- function(rhs){
 
 # Generates list of increasingly large probability vectors
 # Only keeps vectors of odd size
-make_prob_test_list <- function(nruns, end_size){
-  
-  odd_probs <- list()
-  probs_test_list <- list()
-  for(i in 1:nruns){
-    for(j in 5:end_size){
-      
-      probs_test <- rep(0, j)
-      probs_test[1] <- 1
-      
-      odd_int_positions <-  seq(1, j * 2, by = 2)
-    }
-    odd_probs[[i]] <- probs_test[odd_int_positions]
+
+make_prob_test_list <- function(nruns, end_size = 5){
+  if (end_size < 5){
+    stop("End size must be > 5.")
   }
-  return(odd_probs)
+  
+  probs_test_list <- list()
+  for (i in 1:(nruns * 2)){
+    
+    # Starts end_size at 5 and increases 1 per loop until i = nruns
+    probs_test <- rep(0, end_size - (end_size - (5 + (i - 1))))
+    probs_test[1] <- 1
+    probs_test_list[[i]] <- probs_test
+  }
+  index_vector <- c(TRUE,FALSE)
+  probs_test_list <- probs_test_list[index_vector]
+  return(probs_test_list)
 }
+
 # Generates list of parameter vectors based on sampling from a normal 
 # distribution
 make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0) {
