@@ -113,7 +113,6 @@ compile_DAISIE <- function(pars, x){
   require(DAISIE)
   require(odeintr)
 
-  x <- x
   list_pars_indices <- prepare_odeintr(pars, x)
   sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]])
   eqs <- make_sys(sys)
@@ -125,14 +124,14 @@ compile_DAISIE <- function(pars, x){
   beep(2)
 }
 
-integrate_daisie <- function(x, pars, t = 4, timestep = 0.5){
+integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
   # Integrates DAISIE sytem with odeintr and deSolve #
   brts <- c(-t, 0)
-  result_deSolve <- ode(x,
+  result_deSolve <- ode(probs,
                         brts[1:2], DAISIE_loglik_rhs, pars,
                         rtol = 1e-10,atol = 1e-10,method = "lsodes")
-
-  result_odeintr <- y_odeintr(x, t, timestep)
+write(result_deSolve, "deSolve")
+  result_odeintr <- y_odeintr(probs, t, timestep) ### TEST: ODEINTR CRASHES WHEN X IS INVALID
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
@@ -441,7 +440,7 @@ run_integrator_test <- function(probs, pars, nruns) {
   for (i in 1:nruns){
     cat(paste0("Integrating function ", i, "...",  "\n"))
     compile_DAISIE(pars[[i]], x = probs[[i]])
-    result_list[[i]] <- integrate_daisie(x = probs[[i]],
+    result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.1)
     Sys.sleep(0.5)
@@ -464,18 +463,18 @@ calculate_error <- function(result_list) {
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
-test_integrators <- function(size = 10, ddep = 0, kk = 0, nruns) {
+test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns, K = Inf) {
   
   require(DAISIE)
   require(deSolve)
   require(odeintr)
   require(beepr)
   
-  probs <- make_prob_test_list(size)
-  test_pars <- make_pars_test_list(size, ddep, kk)
+  probs <- make_prob_test_list(nruns, end_size)
+  test_pars <- make_pars_test_list(nruns = nruns, K = K, kk = kk, ddep = ddep)
   results <- run_integrator_test(probs, test_pars, nruns)
   #diff <- calculate_error(results)
-  return(list(result_list))
+  return(list(results))
 }
 
 
