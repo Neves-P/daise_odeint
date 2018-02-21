@@ -9,7 +9,6 @@ library(deSolve)
 
 prepare_odeintr <- function(probs, pars){
   # Parameter testing function #
-
   lac <- pars[1]
   mu <- pars[2]
   K <- pars[3]
@@ -19,7 +18,7 @@ prepare_odeintr <- function(probs, pars){
   ddep <- pars[7]
   x <- probs
   lx <- (length(x) - 1) / 2
-
+  print(lx)
   nn <- -2:(lx + 2 * kk + 1)
   lnn <- length(nn)
   nn <- pmax(rep(0, lnn), nn)
@@ -126,10 +125,11 @@ compile_DAISIE <- function(probs, pars){
 
 integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
   # Integrates DAISIE sytem with odeintr and deSolve #
+
   brts <- c(-t, 0)
   result_deSolve <- ode(probs,
                         brts[1:2], DAISIE_loglik_rhs, pars,
-                        rtol = 1e-10,atol = 1e-10,method = "lsodes")
+                        rtol = 1e-10, atol = 1e-10, method = "lsodes")
    write.csv(result_deSolve, "deSolve.csv")
   
   result_odeintr <- y_odeintr(probs, t, timestep) ### TEST: ODEINTR CRASHES WHEN X IS INVALID
@@ -442,7 +442,7 @@ run_integrator_test <- function(probs, pars, nruns) {
   result_list <- list()
   for (i in 1:nruns){
     cat(paste0("Integrating system ", i, "...",  "\n"))
-    compile_DAISIE(pars[[i]], x = probs[[i]])
+    compile_DAISIE(probs[[i]], pars[[i]])
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.1)
@@ -475,8 +475,6 @@ test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns, K = Inf) {
   
   probs <- make_prob_test_list(nruns, end_size)
   test_pars <- make_pars_test_list(nruns, K, ddep, kk)
-  print(paste0("prob vector: ", probs))
-  print(paste0("pars vector: ", test_pars))
   results <- run_integrator_test(probs, test_pars, nruns)
   #diff <- calculate_error(results)
   return(list(results))
