@@ -18,7 +18,7 @@ prepare_odeintr <- function(probs, pars){
   ddep <- pars[7]
   x <- probs
   lx <- (length(x) - 1) / 2
-  print(lx)
+
   nn <- -2:(lx + 2 * kk + 1)
   lnn <- length(nn)
   nn <- pmax(rep(0, lnn), nn)
@@ -130,10 +130,12 @@ integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
   result_deSolve <- ode(probs,
                         brts[1:2], DAISIE_loglik_rhs, pars,
                         rtol = 1e-10, atol = 1e-10, method = "lsodes")
-   write.csv(result_deSolve, "deSolve.csv")
+   try(write.csv(result_deSolve, "deSolve.csv"), outFile = "Could not write
+       to deSolve.csv.\n")
   
   result_odeintr <- y_odeintr(probs, t, timestep) ### TEST: ODEINTR CRASHES WHEN X IS INVALID
-   write.csv(result_odeintr, "odeintr.csv")
+   try(write.csv(result_odeintr, "odeintr.csv"), outFile = "Could not write
+       to odeintr.csv.\n")
   
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
@@ -424,8 +426,8 @@ make_prob_test_list <- function(nruns, end_size = 5){
 
 # Generates list of parameter vectors based on sampling from a normal 
 # distribution
-make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0) {
-  
+make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0, seed) {
+  set.seed(seed)
   pars_test_list <- list()
   for (i in 1:nruns){
     pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
@@ -454,19 +456,22 @@ run_integrator_test <- function(probs, pars, nruns) {
 
 
 # Calculates difference between deSolve and odeintr last equation
-calculate_error <- function(result_list) {
-  diff <- c()
-  for (i in 1:10){
-    diff <- append(diff, result_list[[i]]$deSolve[length(result_list[[i]]$deSolve) - 2] -
-                     result_list[[i]]$odeintr[5,length(result_list[[i]]$odeintr) - 1])
+calculate_error <- function(results, nruns) {
+  error <- c()
+  for (i in 1:nruns){
+    deSolve_last_col <- results[[i]][[1]][[2,ncol(results[[i]][[1]]) - 1]]
+    odeintr_last_col <- results[[i]][[2]][length(results[[i]][[2]]) - 1][nrow(results[[i]][[2]][length(results[[i]][[2]]) - 1]),]
+    
+    error[i] <- deSolve_last_col - odeintr_last_col
   }
-  return(diff)
+  return(list(error))
 }
 
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
-test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns, K = Inf) {
+test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns,
+                             K = Inf, seed = 42) {
   
   require(DAISIE)
   require(deSolve)
@@ -474,10 +479,10 @@ test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns, K = Inf) {
   require(beepr)
   
   probs <- make_prob_test_list(nruns, end_size)
-  test_pars <- make_pars_test_list(nruns, K, ddep, kk)
+  test_pars <- make_pars_test_list(nruns, K, ddep, kk, seed)
   results <- run_integrator_test(probs, test_pars, nruns)
-  #diff <- calculate_error(results)
-  return(list(results))
+  error <- calculate_error(results, nruns)
+  return(list(results, error))
 }
 
 
