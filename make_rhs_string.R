@@ -110,7 +110,7 @@ compile_DAISIE <- function(probs, pars, beep){
   pars <- sys$pars[unique(names(sys$pars))]
 
   compile_sys(name = "y_odeintr", eqs, pars, 
-              sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10) 
+              sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10, rebuild = TRUE) 
   if (beep == TRUE){
   beep(2)
   }
@@ -438,8 +438,8 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
   result_list <- list()
   for (i in 1:nruns){
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
-    cat(probs[[i]], file="probs.csv", append = TRUE, sep = "\n")
-    cat(pars[[i]], file="pars.csv", append = TRUE, sep = "\n")
+    cat(probs[[i]], file="probs.csv", append = FALSE, sep = "\n")
+    cat(pars[[i]], file="pars.csv", append = FALSE, sep = "\n")
     compile_DAISIE(probs[[i]], pars[[i]], beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
@@ -465,7 +465,7 @@ calculate_error <- function(results, nruns) {
 }
 
 # Plots error as scatterplot or boxplot
-plot_error <- function(error, type = "boxplot") {
+plot_error <- function(error, K, ddep, type = "boxplot") {
   if (type != "boxplot" && type != "scatterplot"){
     cat("\nInvalid plot type. Coercing to boxplot.\n")
     type = "boxplot"
@@ -473,11 +473,15 @@ plot_error <- function(error, type = "boxplot") {
   if (type == "boxplot"){
     boxplot(error, main = "Differences between deSolve and odeintr", 
             ylab = "deSolve last component - odeintr last component")
+    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
+           inset = c(0,-0.2), xpd = TRUE) 
   }else{
     plot(error[[1]], main = "Differences between deSolve and odeintr",
          ylab = "deSolve last component - odeintr last component",
          xlab = "System")
     abline(0,0, col = "red")
+    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
+           inset = c(0,-0.2), xpd = TRUE) 
   }
 }
 
@@ -506,7 +510,7 @@ test_integrators <- function(nruns, start_size = 5, ddep = 0, kk = 0,
   
   # Plots differences between outputs
   if (plotit == TRUE){
-    plot_error(error, style)
+    plot_error(error, K, ddep, style)
   }
   invisible(list(results, error))
 }
