@@ -2,11 +2,6 @@
 # Code adapted from package DAISIE (Etienne, Valente, Phillimore & Haegeman), 
 # requires package odeintr (Keitt)
 
-library(odeintr)
-library(DAISIE)
-library(beepr)
-library(deSolve)
-
 prepare_odeintr <- function(probs, pars){
   # Parameter testing function #
   lac <- pars[1]
@@ -107,10 +102,6 @@ prepare_odeintr <- function(probs, pars){
 
 compile_DAISIE <- function(probs, pars, beep){
   # Compiles system from DAISIE in odeintr #
-  require(beepr)
-  require(deSolve)
-  require(DAISIE)
-  require(odeintr)
 
   list_pars_indices <- prepare_odeintr(probs, pars)
   sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]])
@@ -491,20 +482,29 @@ plot_error <- function(error, type = "boxplot") {
 }
 
 # Compiles and integrates two systems with random parameters and specified size
-# Returns results of integration and difference between second to last components
-# of system
-test_integrators <- function(start_size = 5, ddep = 0, kk = 0, nruns,
-                             K = Inf, seed = 42, beep = FALSE, plotit = TRUE, style = "boxplot") {
-  
+# Returns results of integration and difference between second to last 
+# components of the system.
+test_integrators <- function(nruns, start_size = 5, ddep = 0, kk = 0,
+                             K = Inf, seed = 42, beep = FALSE, 
+                             plotit = TRUE, style = "boxplot") {
   require(DAISIE)
   require(deSolve)
   require(odeintr)
   require(beepr)
   
+  # Generate probabilities vector c(1, 0, 0, 0, 0) with odd number of elements
   probs <- make_prob_test_list(nruns, start_size)
+  
+  # Generate parameters vector from rnorm
   test_pars <- make_pars_test_list(nruns, K, ddep, kk, seed)
+  
+  # Integrates generated systems using deSolve and odeintr
   results <- run_integrator_test(probs, test_pars, nruns, beep)
+  
+  # Calculates difference between outputs
   error <- calculate_error(results, nruns)
+  
+  # Plots differences between outputs
   if (plotit == TRUE){
     plot_error(error, style)
   }
