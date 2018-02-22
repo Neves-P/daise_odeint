@@ -105,7 +105,7 @@ prepare_odeintr <- function(probs, pars){
   return(list(list_pars, list_indices))
 }
 
-compile_DAISIE <- function(probs, pars){
+compile_DAISIE <- function(probs, pars, beep){
   # Compiles system from DAISIE in odeintr #
   require(beepr)
   require(deSolve)
@@ -120,7 +120,9 @@ compile_DAISIE <- function(probs, pars){
 
   compile_sys(name = "y_odeintr", eqs, pars, 
               sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10) 
+  if (beep == TRUE){
   beep(2)
+  }
 }
 
 integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
@@ -406,16 +408,16 @@ make_sys <- function(rhs){
 # Generates list of increasingly large probability vectors
 # Only keeps vectors of odd size
 
-make_prob_test_list <- function(nruns, end_size = 5){
-  if (end_size < 5){
-    stop("End size must be > 5.")
+make_prob_test_list <- function(nruns, start_size = 5){
+  if (start_size < 5){
+    stop("Start size must be > 5.")
   }
   
   probs_test_list <- list()
   for (i in 1:(nruns * 2)){
     
-    # Starts end_size at 5 and increases 1 per loop until i = nruns
-    probs_test <- rep(0, end_size - (end_size - (5 + (i - 1))))
+    # Starts start_size at 5 and increases 1 per loop until i = nruns
+    probs_test <- rep(0, start_size - (start_size - (5 + (i - 1))))
     probs_test[1] <- 1
     probs_test_list[[i]] <- probs_test
   }
@@ -439,15 +441,19 @@ make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0, seed) {
 }
 
 # Compiles odeintr integrator and integrates system with odeintr and deSolve
-run_integrator_test <- function(probs, pars, nruns) {
+run_integrator_test <- function(probs, pars, nruns, beep) {
+  pb <- txtProgressBar(min = 0, max = nruns, initial = 1, style = 3)
   
   result_list <- list()
   for (i in 1:nruns){
-    cat(paste0("Integrating system ", i, "...",  "\n"))
-    compile_DAISIE(probs[[i]], pars[[i]])
+    cat(paste0("\nIntegrating system ", i, "...",  "\n"))
+    cat(probs[[i]], file="probs.csv", append = TRUE, sep = "\n")
+    cat(pars[[i]], file="pars.csv", append = TRUE, sep = "\n")
+    compile_DAISIE(probs[[i]], pars[[i]], beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.1)
+    setTxtProgressBar(pb, i)
     Sys.sleep(0.5)
   }
   return(result_list)
@@ -470,17 +476,17 @@ calculate_error <- function(results, nruns) {
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
-test_integrators <- function(end_size = 5, ddep = 0, kk = 0, nruns,
-                             K = Inf, seed = 42) {
+test_integrators <- function(start_size = 5, ddep = 0, kk = 0, nruns,
+                             K = Inf, seed = 42, beep = FALSE) {
   
   require(DAISIE)
   require(deSolve)
   require(odeintr)
   require(beepr)
   
-  probs <- make_prob_test_list(nruns, end_size)
+  probs <- make_prob_test_list(nruns, start_size)
   test_pars <- make_pars_test_list(nruns, K, ddep, kk, seed)
-  results <- run_integrator_test(probs, test_pars, nruns)
+  results <- run_integrator_test(probs, test_pars, nruns, beep)
   error <- calculate_error(results, nruns)
   return(list(results, error))
 }
