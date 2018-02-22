@@ -473,11 +473,28 @@ calculate_error <- function(results, nruns) {
   return(list(error))
 }
 
+# Plots error as scatterplot or boxplot
+plot_error <- function(error, type = "boxplot") {
+  if (type != "boxplot" && type != "scatterplot"){
+    cat("\nInvalid plot type. Coercing to boxplot.\n")
+    type = "boxplot"
+  }
+  if (type == "boxplot"){
+    boxplot(error, main = "Differences between deSolve and odeintr", 
+            ylab = "deSolve last component - odeintr last component")
+  }else{
+    plot(error[[1]], main = "Differences between deSolve and odeintr",
+         ylab = "deSolve last component - odeintr last component",
+         xlab = "System")
+    abline(0,0, col = "red")
+  }
+}
+
 # Compiles and integrates two systems with random parameters and specified size
 # Returns results of integration and difference between second to last components
 # of system
 test_integrators <- function(start_size = 5, ddep = 0, kk = 0, nruns,
-                             K = Inf, seed = 42, beep = FALSE) {
+                             K = Inf, seed = 42, beep = FALSE, plotit = TRUE, style = "boxplot") {
   
   require(DAISIE)
   require(deSolve)
@@ -488,7 +505,10 @@ test_integrators <- function(start_size = 5, ddep = 0, kk = 0, nruns,
   test_pars <- make_pars_test_list(nruns, K, ddep, kk, seed)
   results <- run_integrator_test(probs, test_pars, nruns, beep)
   error <- calculate_error(results, nruns)
-  return(list(results, error))
+  if (plotit == TRUE){
+    plot_error(error, style)
+  }
+  invisible(list(results, error))
 }
 
 
