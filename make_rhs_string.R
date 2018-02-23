@@ -110,7 +110,8 @@ compile_DAISIE <- function(probs, pars, beep){
   pars <- sys$pars[unique(names(sys$pars))]
 
   compile_sys(name = "y_odeintr", eqs, pars, 
-              sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10, rebuild = TRUE) 
+              sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10, 
+              rebuild = FALSE, cleanupCacheDir = TRUE) 
   if (beep == TRUE){
   beep(2)
   }
@@ -130,6 +131,10 @@ integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
    try(write.csv(result_odeintr, "odeintr.csv"), outFile = "Could not write
        to odeintr.csv.\n")
   
+  # Unload DLLs
+  unloadNamespace(y_odeintr)
+  dyn.unload()
+  dir(paste0(tempdir(), "\\sourceCpp-x86_64-w64-mingw32-0.12.15")tempdir(), pattern = "sourceCpp")
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
@@ -409,6 +414,7 @@ make_prob_test_list <- function(nruns, start_size = 5){
     
     # Starts start_size at 5 and increases 1 per loop until i = nruns
     probs_test <- rep(0, start_size - (start_size - (5 + (i - 1))))
+    if (length(probs_test) > 201) probs_test <- rep(0,201) # THIS DOES NOT WORK!
     probs_test[1] <- 1
     probs_test_list[[i]] <- probs_test
   }
