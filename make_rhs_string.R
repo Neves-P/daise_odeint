@@ -415,7 +415,7 @@ make_prob_test_list <- function(nruns, start_size = 5){
     probs_test <- rep(0, start_size - (start_size - (5 + (i - 1))))
     if (length(probs_test) > 201){
       probs_test <- rep(0,201)
-    } # THIS DOES NOT WORK!
+    }
     probs_test[1] <- 1
     probs_test_list[[i]] <- probs_test
   }
@@ -444,6 +444,13 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
   
   result_list <- list()
   for (i in 1:nruns){
+    
+    if (i == 1 && (file.exists("results_deSolve.csv") ||
+                   file.exists("results.odeintr.csv"))){
+      file.remove("results_deSolve.csv")
+      file.remove("results_odeintr.csv")
+    }
+    
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
     cat(probs[[i]], file="probs.csv", append = FALSE, sep = "\n")
     cat(pars[[i]], file="pars.csv", append = FALSE, sep = "\n")
@@ -453,19 +460,22 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
                                          t = 4, timestep = 0.1)
     setTxtProgressBar(pb, i)
     
-    # Unload dll
-    
+    ### Unload DLLs ###
     # Get all DLLs
     loaded_dll <- getLoadedDLLs()
     
-    # Get only sourceCpp dlls object
+    # Get only sourceCpp DLL object
     loaded_dll_cpp <- loaded_dll[grep("sourceCpp", loaded_dll)]
     
-    # Path to loaded sourceCpp dll
+    # Path to loaded sourceCpp DLL
     path <- loaded_dll_cpp[1][[1]][[2]]
     
-    # Unload dll
+    # Unload DLL
     dyn.unload(path[[1]])
+    
+    # Write results to file
+    write.table(result_list[[i]]$deSolve, file = "results_deSolve.csv", append = TRUE, sep = ",")
+    write.table(result_list[[i]]$odeintr, file = "results_odeintr.csv", append = TRUE, sep = ",")
     
     Sys.sleep(0.5)
   }
