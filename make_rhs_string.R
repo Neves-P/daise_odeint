@@ -445,10 +445,14 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
   result_list <- list()
   for (i in 1:nruns){
     
-    if (i == 1 && (file.exists("results_deSolve.csv") ||
-                   file.exists("results.odeintr.csv"))){
-      file.remove("results_deSolve.csv")
-      file.remove("results_odeintr.csv")
+    if (i == 1 && (file.exists(paste0("results_deSolve_ddep", pars[[i]][[7]],
+                                      ".csv")) ||
+                   file.exists(paste0("results_odeintr_ddep", pars[[i]][[7]],
+                                      ".csv")))){
+      file.remove(paste0("results_deSolve_ddep", pars[[i]][[7]],
+                         ".csv"))
+      file.remove(paste0("results_odeintr_ddep", pars[[i]][[7]],
+                         ".csv"))
     }
     
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
@@ -474,14 +478,17 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
     dyn.unload(path[[1]])
     
     # Write results to file
-    write.table(result_list[[i]]$deSolve, file = "results_deSolve.csv", append = TRUE, sep = ",")
-    write.table(result_list[[i]]$odeintr, file = "results_odeintr.csv", append = TRUE, sep = ",")
+    write.table(result_list[[i]]$deSolve, 
+                file = paste0("results_deSolve_", pars[[i]][[7]], ".csv"),
+                append = TRUE, sep = ",")
+    write.table(result_list[[i]]$odeintr,
+                file = paste0("results_odeintr_", pars[[i]][[7]], ".csv"),
+                append = TRUE, sep = ",")
     
     Sys.sleep(0.5)
   }
   return(result_list)
 }
-
 
 
 # Calculates difference between deSolve and odeintr last equation
