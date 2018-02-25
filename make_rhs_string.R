@@ -413,7 +413,7 @@ make_prob_test_list <- function(nruns, start_size = 5){
     
     # Starts start_size at 5 and increases 1 per loop until i = nruns
     probs_test <- rep(0, start_size - (start_size - (5 + (i - 1))))
-    if (length(probs_test) > 201)
+    if (length(probs_test) > 201){
       probs_test <- rep(0,201)
     } # THIS DOES NOT WORK!
     probs_test[1] <- 1
