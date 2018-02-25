@@ -478,12 +478,16 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
     dyn.unload(path[[1]])
     
     # Write results to file
+    
+    deSolve_file_name <- paste0("results_deSolve_", pars[[i]][[7]], "_",
+                                pars[[i]][[3]], ".csv")
     write.table(result_list[[i]]$deSolve, 
-                file = paste0("results_deSolve_", pars[[i]][[7]], ".csv"),
-                append = TRUE, sep = ",")
+                file = deSolve_file_name, append = TRUE, sep = ",")
+    
+    odeintr_file_name <- paste0("results_odeintr_", pars[[i]][[7]], "_",
+           pars[[i]][[3]],".csv")
     write.table(result_list[[i]]$odeintr,
-                file = paste0("results_odeintr_", pars[[i]][[7]], ".csv"),
-                append = TRUE, sep = ",")
+                file = odeintr_file_name, append = TRUE, sep = ",")
     
     Sys.sleep(0.5)
   }
@@ -505,22 +509,33 @@ calculate_error <- function(results, nruns) {
 
 # Plots error as scatterplot or boxplot
 plot_error <- function(error, K, ddep, type = "boxplot") {
+  
   if (type != "boxplot" && type != "scatterplot"){
     cat("\nInvalid plot type. Coercing to boxplot.\n")
     type = "boxplot"
   }
   if (type == "boxplot"){
+    boxplot_name <- paste0("boxplot_K_", K, "_ddep_", ddep, ".svg")
+    svg(filename= boxplot_name)
+        
     boxplot(error, main = "Differences between deSolve and odeintr", 
             ylab = "deSolve last component - odeintr last component")
     legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
            inset = c(0,-0.2), xpd = TRUE) 
+    
+    dev.off()
+    
   }else{
-    plot(error[[1]], main = "Differences between deSolve and odeintr",
+    scatterplot_name <- paste0("scatterplot_K_", K, "_ddep_", ddep, ".svg")
+    svg(filename= scatterplot_name)
+    
+    error_plot <- plot(error[[1]], main = "Differences between deSolve and odeintr",
          ylab = "deSolve last component - odeintr last component",
          xlab = "System")
     abline(0,0, col = "red")
     legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
            inset = c(0,-0.2), xpd = TRUE) 
+    dev.off()
   }
 }
 
