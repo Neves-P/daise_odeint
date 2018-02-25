@@ -132,9 +132,9 @@ integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
        to odeintr.csv.\n")
   
   # Unload DLLs
-  unloadNamespace(y_odeintr)
-  dyn.unload()
-  dir(paste0(tempdir(), "\\sourceCpp-x86_64-w64-mingw32-0.12.15")tempdir(), pattern = "sourceCpp")
+  # unloadNamespace(y_odeintr)
+  # dyn.unload()
+  # dir(paste0(tempdir(), "\\sourceCpp-x86_64-w64-mingw32-0.12.15")tempdir(), pattern = "sourceCpp")
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
@@ -451,6 +451,21 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.1)
     setTxtProgressBar(pb, i)
+    
+    # Unload dll
+    
+    # Get all DLLs
+    loaded_dll <- getLoadedDLLs()
+    
+    # Get only sourceCpp dlls object
+    loaded_dll_cpp <- loaded_dll[grep("sourceCpp", loaded_dll)]
+    
+    # Path to loaded sourceCpp dll
+    path <- loaded_dll_cpp[1][[1]][[2]]
+    
+    # Unload dll
+    dyn.unload(path[[1]])
+    
     Sys.sleep(0.5)
   }
   return(result_list)
