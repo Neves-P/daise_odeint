@@ -457,7 +457,7 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
     compile_DAISIE(probs[[i]], pars[[i]], beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
-                                         t = 4, timestep = 0.1)
+                                         t = 4, timestep = 0.5)
     setTxtProgressBar(pb, i)
     
     ### Unload DLLs ###
