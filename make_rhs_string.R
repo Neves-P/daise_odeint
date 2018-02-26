@@ -547,7 +547,7 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
   }
   if (type == "boxplot"){
     boxplot_name <- paste0("boxplot_K_", K, "_ddep_", ddep, ".svg")
-    svg(filename= boxplot_name)
+    svg(filename = boxplot_name)
         
     boxplot(error, main = "Differences between deSolve and odeintr", 
             ylab = "deSolve last component - odeintr last component")
@@ -559,13 +559,14 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
     
   }else{
     scatterplot_name <- paste0("scatterplot_K_", K, "_ddep_", ddep, ".svg")
-    svg(filename= scatterplot_name)
+    svg(filename = scatterplot_name)
     
     error_plot <- plot(error[[1]], main = "Differences between deSolve and odeintr",
          ylab = "deSolve last component - odeintr last component",
          xlab = "System")
     abline(0,0, col = "red")
-    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
+    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep,
+                                " --- N = ", nruns),
            inset = c(0,-0.2), xpd = TRUE) 
     dev.off()
   }
@@ -576,7 +577,7 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
 # components of the system.
 test_integrators <- function(nruns, start_size = 5, ddep = 0, kk = 0,
                              K = Inf, seed = 42, beep = FALSE, 
-                             plotit = TRUE, style = "boxplot") {
+                             plotit = TRUE, type = "boxplot") {
   require(DAISIE)
   require(deSolve)
   require(odeintr)
@@ -596,7 +597,7 @@ test_integrators <- function(nruns, start_size = 5, ddep = 0, kk = 0,
   
   # Plots differences between outputs
   if (plotit == TRUE){
-    plot_error(error, K, ddep, style)
+    plot_error(error, K, ddep, type, nruns)
   }
   invisible(list(results, error))
 }
