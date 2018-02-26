@@ -100,7 +100,7 @@ prepare_odeintr <- function(probs, pars){
   return(list(list_pars, list_indices))
 }
 
-compile_DAISIE <- function(probs, pars, beep, kk){
+compile_DAISIE <- function(probs, pars, beep){
   # Compiles system from DAISIE in odeintr #
 
   list_pars_indices <- prepare_odeintr(probs, pars)
@@ -463,7 +463,7 @@ make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0, seed) {
     pars_test_list[[i]] <- c(lac = abs(rnorm(1, 2.5, 1)), 
                              mu = abs(rnorm(1, 2.7, 1)),
                              K = K, gam = abs(rnorm(1, 0.009, 0.05)),
-                             laa = abs(rnorm(1, 1.01, 1)), kk = 0, ddep = ddep)
+                             laa = abs(rnorm(1, 1.01, 1)), kk = kk, ddep = ddep)
   }
   return(pars_test_list)
 }
@@ -488,7 +488,7 @@ run_integrator_test <- function(probs, pars, nruns, kk, beep) {
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
     cat(probs[[i]], file="probs.csv", append = FALSE, sep = "\n")
     cat(pars[[i]], file="pars.csv", append = FALSE, sep = "\n")
-    compile_DAISIE(probs[[i]], pars[[i]], kk, beep)
+    compile_DAISIE(probs[[i]], pars[[i]], beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.5)
