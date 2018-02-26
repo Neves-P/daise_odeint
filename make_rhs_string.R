@@ -581,4 +581,3 @@ deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
 odeintr_calc <- function(x, t, timestep){
   y_odeintr(x, t, timestep)
 }
-
