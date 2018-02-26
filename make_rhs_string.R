@@ -543,7 +543,7 @@ calculate_error <- function(results, nruns) {
 }
 
 # Plots error as scatterplot or boxplot
-plot_error <- function(error, K, ddep, type = "boxplot") {
+plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
   
   if (type != "boxplot" && type != "scatterplot"){
     cat("\nInvalid plot type. Coercing to boxplot.\n")
@@ -555,7 +555,8 @@ plot_error <- function(error, K, ddep, type = "boxplot") {
         
     boxplot(error, main = "Differences between deSolve and odeintr", 
             ylab = "deSolve last component - odeintr last component")
-    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep),
+    legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep,
+                                " --- N = ", nruns),
            inset = c(0,-0.2), xpd = TRUE) 
     
     dev.off()
@@ -616,14 +617,5 @@ deSolve_calc <- function(x, pars, brts, timestep = 0.5) {
 odeintr_calc <- function(x, t, timestep){
   y_odeintr(x, t, timestep)
 
-}
-
-ddep_vec <- c(2, 11, 21)
-time_to_run <- c()
-for (i in 1:3){
-  t_start <- Sys.time()
-  test_integrators(300, ddep = ddep_vec[i], K = 40)
-  t_end <- Sys.time()
-  time_to_run[i] <- t_end - t_start
 }
 
