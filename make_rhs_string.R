@@ -100,11 +100,11 @@ prepare_odeintr <- function(probs, pars){
   return(list(list_pars, list_indices))
 }
 
-compile_DAISIE <- function(probs, pars, beep){
+compile_DAISIE <- function(probs, pars, beep, kk){
   # Compiles system from DAISIE in odeintr #
 
   list_pars_indices <- prepare_odeintr(probs, pars)
-  sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]])
+  sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]], kk)
   eqs <- make_sys(sys)
 
   pars <- sys$pars[unique(names(sys$pars))]
@@ -131,15 +131,11 @@ integrate_daisie <- function(probs, pars, t = 4, timestep = 0.5){
    try(write.csv(result_odeintr, "odeintr.csv"), outFile = "Could not write
        to odeintr.csv.\n")
   
-  # Unload DLLs
-  # unloadNamespace(y_odeintr)
-  # dyn.unload()
-  # dir(paste0(tempdir(), "\\sourceCpp-x86_64-w64-mingw32-0.12.15")tempdir(), pattern = "sourceCpp")
   return(list(deSolve = result_deSolve, odeintr = result_odeintr))
 }
 
 ##### Function to get str of all rhs and pars ####
-make_rhs_1 <- function(list_pars, list_indices){
+make_rhs_1 <- function(list_pars, list_indices, kk){
 
   # Aux objects
   lx <- list_pars$lx
@@ -474,7 +470,7 @@ make_pars_test_list <- function(nruns, K = Inf, ddep = 0, kk = 0, seed) {
 }
 
 # Compiles odeintr integrator and integrates system with odeintr and deSolve
-run_integrator_test <- function(probs, pars, nruns, beep) {
+run_integrator_test <- function(probs, pars, nruns, kk, beep) {
   pb <- txtProgressBar(min = 0, max = nruns, initial = 1, style = 3)
   
   result_list <- list()
@@ -493,7 +489,7 @@ run_integrator_test <- function(probs, pars, nruns, beep) {
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
     cat(probs[[i]], file="probs.csv", append = FALSE, sep = "\n")
     cat(pars[[i]], file="pars.csv", append = FALSE, sep = "\n")
-    compile_DAISIE(probs[[i]], pars[[i]], beep)
+    compile_DAISIE(probs[[i]], pars[[i]], kk, beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
                                          t = 4, timestep = 0.5)
@@ -593,7 +589,7 @@ test_integrators <- function(nruns, start_size = 5, ddep = 0, kk = 0,
   test_pars <- make_pars_test_list(nruns, K, ddep, kk, seed)
   
   # Integrates generated systems using deSolve and odeintr
-  results <- run_integrator_test(probs, test_pars, nruns, beep)
+  results <- run_integrator_test(probs, test_pars, nruns, kk, beep)
   
   # Calculates difference between outputs
   error <- calculate_error(results, nruns)
