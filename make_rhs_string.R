@@ -264,7 +264,7 @@ make_rhs_1 <- function(list_pars, list_indices){
     prod6 <- paste(neg_term1, temp_nn_in3, temp_xx1_ix3, sep = " * ")
 
     # Seventh product
-    # This gamvec is assign the regular (non negative) value of gam
+    # This gamvec is assigned the regular (non negative) value of gam
     # The string is built with a negative sign for correct input in odeintr
     temp_neggamvec_il3 <- paste("gamvec_il3", i, sep = "_")
     assign(temp_neggamvec_il3, list_pars$gamvec[list_indices$il3][i]) 
@@ -272,12 +272,47 @@ make_rhs_1 <- function(list_pars, list_indices){
     prod7 <- paste(paste0("(-1.0) * ", temp_neggamvec_il3),
                    temp_xx1_ix3, sep = " * ")
 
+    if (kk == 1 && i == 1){
+      
+      # Define xx3
+      temp_xx3 <- paste0("x[", 2 * lx, "]")
+      assign(temp_xx3, list_pars$xx3)
+      
+      # Define laavec[il3[1]]
+      temp_laavec_il3_one <- "laavec_il3_one"
+      assign(temp_laavec_il3_one, list_pars$laavec[list_indices$il3][1])
+      
+      # Paste extra terms
+      kk_1_1 <- paste0(" * ", temp_laavec_il3_one, " * ", temp_xx3)
+      complete_rhs <- paste0(prod1, " + ", prod2, " + ", prod3, " + ", prod4,
+                             " + ", prod5, " + ", " + ", prod6,  " + ", prod7,
+                             kk_1_1)
+      list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
+      
+    }else if (kk == 1 && i == 2){
+      
+      # Define xx3
+      temp_xx3 <- paste0("x[", 2 * lx, "]")
+      assign(temp_xx3, list_pars$xx3)
+      
+      # Define lacvec[il3[1]]
+      temp_lacvec_il3_one <- "lacvec_il3_one"
+      assign(temp_lacvec_il3_one, list_pars$lacvec[list_indices$il3][1])
+      
+      # Paste extra terms
+      kk_1_2 <-  paste0("2 * ", temp_lacvec_il3_one, " * ", temp_xx3)
+      complete_rhs <- paste0(prod1, " + ", prod2, " + ", prod3, " + ", prod4,
+                             " + ", prod5, " + ", " + ", prod6,  " + ", prod7,
+                             kk_1_2)
+      list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
+
+    }else{
 
     # dx1 rhs of equation
     complete_rhs <- paste(prod1, prod2, prod3, prod4,
                           prod5, prod6, prod7, sep = " + ")
     list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
-
+    }
 
     #### dx2 ####
 
