@@ -13,11 +13,15 @@ prepare_odeintr <- function(probs, pars){
   ddep <- pars[7]
   x <- probs
   lx <- (length(x) - 1) / 2
-
+  
   nn <- -2:(lx + 2 * kk + 1)
   lnn <- length(nn)
   nn <- pmax(rep(0, lnn), nn)
 
+  # Work on asserts!
+  assert_that(is.numeric(ddep))
+
+  
   if (ddep == 0)
   {
     laavec = laa * rep(1, lnn)
@@ -154,14 +158,14 @@ make_rhs_1 <- function(list_pars, list_indices, kk){
     
     ## xx1 = Qk
     
-    if(i != 1){ # n-1 falls out of boundary
+    if (i != 1){ # n-1 falls out of boundary
       temp_xx1_ix1 <- paste0("x[", x_counter - 1, "]")
       assign(temp_xx1_ix1, list_pars$xx1[list_indices$ix1][i])
     }else{
       temp_xx1_ix1 <- "0.0"
     }
     
-    if(i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+    if (i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
       temp_xx1_ix2 <- paste0("x[", x_counter + 1, "]")
       assign(temp_xx1_ix2, list_pars$xx1[list_indices$ix2][i])
     }else{
@@ -174,14 +178,14 @@ make_rhs_1 <- function(list_pars, list_indices, kk){
     
     ## xx2 = QMk
     
-    if(i != 1){ # n-1 falls out of boundary
+    if (i != 1){ # n-1 falls out of boundary
       temp_xx2_ix1 <- paste0("x[", x_counter_2 - 1, "]")
       assign(temp_xx2_ix1, list_pars$xx2[list_indices$ix1][i])
     }else{
       temp_xx2_ix1 <- "0.0"
     }
     
-    if(i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
+    if (i != length(list_pars$laavec[list_indices$il1])){ # n+1 falls out of boundary
       temp_xx2_ix2 <- paste0("x[", x_counter_2 + 1, "]")
       assign(temp_xx2_ix2, list_pars$xx2[list_indices$ix2][i])
     }else{
@@ -339,7 +343,7 @@ make_rhs_1 <- function(list_pars, list_indices, kk){
                    temp_nn_in2, temp_xx2_ix2, sep = " * ")
     
     # Negative term
-    temp_muvec_il3_plusone <- paste("muvec_il3_plusone", i, sep= "_")
+    temp_muvec_il3_plusone <- paste("muvec_il3_plusone", i, sep = "_")
     assign(temp_muvec_il3_plusone, list_pars$muvec[list_indices$il3 + 1][i])
     
     temp_lacvec_il3_plusone <- paste("lacvec_il3_plusone", i, sep = "_")
@@ -444,12 +448,12 @@ make_prob_test_list <- function(nruns, start_size = 5){
     # Starts start_size at 5 and increases 1 per loop until i = nruns
     probs_test <- rep(0, start_size - (start_size - (5 + (i - 1))))
     if (length(probs_test) > 201){
-      probs_test <- rep(0,201)
+      probs_test <- rep(0, 201)
     }
     probs_test[1] <- 1
     probs_test_list[[i]] <- probs_test
   }
-  index_vector <- c(TRUE,FALSE)
+  index_vector <- c(TRUE, FALSE)
   probs_test_list <- probs_test_list[index_vector]
   return(probs_test_list)
 }
@@ -486,8 +490,8 @@ run_integrator_test <- function(probs, pars, nruns, kk, beep) {
     }
     
     cat(paste0("\nIntegrating system ", i, "...",  "\n"))
-    cat(probs[[i]], file="probs.csv", append = FALSE, sep = "\n")
-    cat(pars[[i]], file="pars.csv", append = FALSE, sep = "\n")
+    cat(probs[[i]], file = "probs.csv", append = FALSE, sep = "\n")
+    cat(pars[[i]], file = "pars.csv", append = FALSE, sep = "\n")
     compile_DAISIE(probs[[i]], pars[[i]], beep)
     result_list[[i]] <- integrate_daisie(probs = probs[[i]],
                                          pars = pars[[i]],
@@ -515,7 +519,7 @@ run_integrator_test <- function(probs, pars, nruns, kk, beep) {
                 file = deSolve_file_name, append = TRUE, sep = ",")
     
     odeintr_file_name <- paste0("results_odeintr_", pars[[i]][[7]], "_",
-           pars[[i]][[3]],".csv")
+           pars[[i]][[3]], ".csv")
     write.table(result_list[[i]]$odeintr,
                 file = odeintr_file_name, append = TRUE, sep = ",")
     
@@ -529,7 +533,7 @@ run_integrator_test <- function(probs, pars, nruns, kk, beep) {
 calculate_error <- function(results, nruns) {
   error <- c()
   for (i in 1:nruns){
-    deSolve_last_col <- results[[i]][[1]][[2,ncol(results[[i]][[1]]) - 1]]
+    deSolve_last_col <- results[[i]][[1]][[2, ncol(results[[i]][[1]]) - 1]]
     odeintr_last_col <- results[[i]][[2]][length(results[[i]][[2]]) - 1][nrow(results[[i]][[2]][length(results[[i]][[2]]) - 1]),]
     
     error[i] <- deSolve_last_col - odeintr_last_col
@@ -542,7 +546,7 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
   
   if (type != "boxplot" && type != "scatterplot"){
     cat("\nInvalid plot type. Coercing to boxplot.\n")
-    type = "boxplot"
+    type <- "boxplot"
   }
   if (type == "boxplot"){
     boxplot_name <- paste0("boxplot_K_", K, "_ddep_", ddep, ".svg")
@@ -552,7 +556,7 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
             ylab = "deSolve last component - odeintr last component")
     legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep,
                                 " --- N = ", nruns),
-           inset = c(0,-0.2), xpd = TRUE) 
+           inset = c(0, -0.2), xpd = TRUE) 
     
     dev.off()
     
@@ -563,10 +567,10 @@ plot_error <- function(error, K, ddep, type = "boxplot", nruns) {
     error_plot <- plot(error[[1]], main = "Differences between deSolve and odeintr",
          ylab = "deSolve last component - odeintr last component",
          xlab = "System")
-    abline(0,0, col = "red")
+    abline(0, 0, col = "red")
     legend(x = "bottom", paste0("K = ", K, " --- ddep = ", ddep,
                                 " --- N = ", nruns),
-           inset = c(0,-0.2), xpd = TRUE) 
+           inset = c(0, -0.2), xpd = TRUE) 
     dev.off()
   }
 }
