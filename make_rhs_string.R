@@ -28,7 +28,7 @@ prepare_odeintr <- function(probs, pars){
     if (ddep == 1)
     {
       laavec = laa * rep(1, lnn)
-      lacvec = pmax(rep(0, lnn),lac * (1 - nn / K))
+      lacvec = pmax(rep(0, lnn), lac * (1 - nn / K))
       muvec = mu * rep(1, lnn)
       gamvec = gam * rep(1, lnn)
     } else {
@@ -146,7 +146,7 @@ make_rhs_1 <- function(list_pars, list_indices, kk){
   dx_list_counter_increase <- 0
   x_counter <- 0
   x_counter_2 <- lx
-
+  kk <- kk
 
   for (i in 1:length(list_pars$laavec[list_indices$il1])){
     
@@ -296,10 +296,10 @@ make_rhs_1 <- function(list_pars, list_indices, kk){
       assign(temp_lacvec_il3_one, list_pars$lacvec[list_indices$il3][1])
       
       # Paste extra terms
-      kk_1_2 <-  paste0("2 * ", temp_lacvec_il3_one, " * ", temp_xx3)
+      kk_1_2 <-  paste0(" 2 * ", temp_lacvec_il3_one, " * ", temp_xx3)
       complete_rhs <- paste0(prod1, " + ", prod2, " + ", prod3, " + ", prod4,
                              " + ", prod5, " + ", " + ", prod6,  " + ", prod7,
-                             kk_1_2)
+                             " + ", kk_1_2)
       list_dx[[dx_list_counter + dx_list_counter_increase]] <- complete_rhs
 
     }else{
