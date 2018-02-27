@@ -11,14 +11,14 @@ for(i in 1:length(dll_folders)){
 
 loaded_dll <- getLoadedDLLs()
 
-loaded_dll_cpp <- loaded_dll[grep("sourceCpp", names_dll_list)]
+loaded_dll_cpp <- loaded_dll[grep("sourceCpp", loaded_dll)]
 
 paths <- c()
 for (i in 1:length(loaded_dll_cpp)) {
   paths[i] <- loaded_dll_cpp[i][[1]][[2]]  
   
 }
-for (i in 5:length(paths)){
+for (i in 1:length(paths)){
   dyn.unload(paths[[i]])
 }
 getLoadedDLLs()

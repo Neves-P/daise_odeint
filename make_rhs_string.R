@@ -114,7 +114,7 @@ compile_DAISIE <- function(probs, pars, beep){
   pars <- sys$pars[unique(names(sys$pars))]
 
   compile_sys(name = "y_odeintr", eqs, pars, 
-              sys_dim = length(sys$rhs), atol = 1e-10, rtol = 1e-10, 
+              sys_dim = length(sys$rhs), atol = 1e-16, rtol = 1e-10, 
               rebuild = FALSE, cleanupCacheDir = TRUE) 
   if (beep == TRUE){
   beep(2)
@@ -618,4 +618,5 @@ odeintr_calc <- function(x, t, timestep){
   y_odeintr(x, t, timestep)
 
 }
-
+system.time(odeintr_calc(probs, 4, 0.1))
+system.time(deSolve_calc(probs, pars[[1]], c(-4,0), timestep = 0.5))
