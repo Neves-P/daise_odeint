@@ -104,7 +104,7 @@ compile_DAISIE <- function(probs, pars, beep){
   # Compiles system from DAISIE in odeintr #
 
   list_pars_indices <- prepare_odeintr(probs, pars)
-  sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]], kk)
+  sys <- make_rhs_1(list_pars_indices[[1]], list_pars_indices[[2]], pars[6])
   eqs <- make_sys(sys)
 
   pars <- sys$pars[unique(names(sys$pars))]
