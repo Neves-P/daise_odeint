@@ -10,7 +10,7 @@ Possible custom Rcpp integration can be implemented in the future.
 
 The original version of DAISIE can be found on CRAN, [here](https://cran.r-project.org/package=DAISIE).
 
-daisie_odeint is correctly compiles and works with odeintr. However, the functions can not yet be called directly by daisie_ML, but work for integrating one system at a time only.
+daisie_odeint is correctly compiles and works with odeintr. However, the functions can not yet be called directly by daisie_ML, but work for integrating one system at a time only. This is to be added [later](https://github.com/Neves-P/daisie_odeint/projects/1#card-7222633).
 
 See a roadmap of the project [here](https://github.com/Neves-P/daisie_odeint/projects/1).
 
